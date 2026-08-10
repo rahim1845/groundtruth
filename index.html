@@ -163,7 +163,37 @@ footer.site{padding:36px 0 56px}
 @keyframes blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}.card{opacity:1!important;transform:none!important}.caret{opacity:1!important}}
 @media(max-width:640px){.wrap{padding:0 18px}.search{margin-left:0;max-width:none;order:5;width:100%}.metaTR{display:none}.bigframe{height:340px}}
+
+/* ---- clipo-inspired: loader wipe, kinetic hero, cobalt block ---- */
+.loader{position:fixed;inset:0;z-index:200;background:var(--cobalt);display:flex;align-items:center;justify-content:center;transition:transform .6s cubic-bezier(.7,0,.2,1)}
+.loader svg{width:88px;height:88px;color:var(--on-cobalt);animation:pulse 1s ease-in-out infinite alternate}
+@keyframes pulse{to{transform:scale(1.08)}}
+.loader.done{transform:translateY(-101%)}
+.hero{display:grid;grid-template-columns:1.42fr .58fr;gap:44px;align-items:center}
+.heroL{min-width:0}
+.display .brk{color:var(--cobalt);font-weight:800;white-space:nowrap}
+.display .ar{width:.5em;height:.5em;vertical-align:-.01em;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.display .knock{background:var(--cobalt);color:var(--on-cobalt);padding:0 .1em;display:inline-block}
+.display .l2{display:block}
+.brk2{font-weight:800;margin-left:5px}
+.heroR{display:flex;justify-content:center}
+.bigblock{background:var(--cobalt);color:var(--on-cobalt);width:100%;max-width:300px;aspect-ratio:1/1;transform:rotate(-2deg);display:flex;flex-direction:column;justify-content:space-between;padding:20px}
+.bigblock .bb-top{font-size:11px;letter-spacing:.12em}
+.bigblock .bb-check{flex:1;display:flex;align-items:center;justify-content:center}
+.bigblock .bb-check svg{width:92px;height:92px}
+.bigblock .bb-label{font-size:12px;letter-spacing:.05em;line-height:1.5}
+@keyframes clipup{from{clip-path:inset(0 0 100% 0);transform:translateY(.18em)}to{clip-path:inset(0 0 -12% 0);transform:none}}
+@keyframes blockin{from{opacity:0;transform:rotate(-2deg) translateY(18px)}to{opacity:1;transform:rotate(-2deg)}}
+.display .brk,.display .knock,.display .l2{animation:clipup .7s cubic-bezier(.2,.8,.2,1) both}
+.display .l2{animation-delay:.08s}
+.bigblock{animation:blockin .7s cubic-bezier(.2,.8,.2,1) .18s both}
+@media(max-width:820px){.hero{grid-template-columns:1fr;gap:26px}.heroR{justify-content:flex-start}.bigblock{max-width:196px}}
+@media (prefers-reduced-motion:reduce){.loader{display:none!important}.loader svg{animation:none!important}.display .brk,.display .knock,.display .l2,.bigblock{animation:none!important}}
 </style>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <svg viewBox="0 0 32 32" fill="none"><rect x="1.5" y="1.5" width="29" height="29" rx="8" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 16.4l4.3 4.3 8.7-9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
 
 <div class="wrap">
   <div class="top">
@@ -177,15 +207,23 @@ footer.site{padding:36px 0 56px}
   </div>
 
   <section class="hero">
-    <span class="metaTR">REFERENCE LIBRARY<br/>WEB / APP · v1<br/>08 SECTIONS</span>
-    <div class="kick"><span class="sq"></span>Reference library // web · app</div>
-    <h1 class="display">Proof over <span class="c">prompts.</span></h1>
-    <p class="lede">A reference library of web &amp; app sections. Copy the prompt, or copy the code — every preview is rendered from the exact code you take. What you see is what you ship.</p>
-    <div class="readout mono" aria-hidden="true">&gt; render(section) <span class="op">===</span> preview&nbsp;&nbsp;<span class="cm">// verified</span><span class="caret">▋</span></div>
-    <div class="cta">
-      <a class="btn p" id="browseBtn" href="#library">Browse the library</a>
-      <a class="btn" href="https://github.com/rahim1845/groundtruth" target="_blank" rel="noopener">Source <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    <div class="heroL">
+      <div class="kick"><span class="sq"></span>Reference library // web · app</div>
+      <h1 class="display"><span class="brk">[<svg class="ar" viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"/></svg>]</span> <span class="knock">Proof</span> <span class="brk">[<svg class="ar" viewBox="0 0 24 24"><path d="M19 12H6M12 5l-7 7 7 7"/></svg>]</span><span class="l2">over prompts.</span></h1>
+      <p class="lede">Copy the prompt, or copy the code — every preview is <b>rendered from the exact code you take.</b> What you see is what you ship.</p>
+      <div class="readout mono" aria-hidden="true">&gt; render(section) <span class="op">===</span> preview&nbsp;&nbsp;<span class="cm">// verified</span><span class="caret">▋</span></div>
+      <div class="cta">
+        <a class="btn p" id="browseBtn" href="#library">Browse the library <span class="brk2">[→]</span></a>
+        <a class="btn" href="https://github.com/rahim1845/groundtruth" target="_blank" rel="noopener">Source <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+      </div>
     </div>
+    <aside class="heroR" aria-hidden="true">
+      <div class="bigblock">
+        <div class="bb-top mono">SPECIMEN // LIVE</div>
+        <div class="bb-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="bb-label mono">preview = code<br/>verified</div>
+      </div>
+    </aside>
   </section>
 </div>
 
@@ -333,6 +371,10 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if(!
 if('IntersectionObserver'in window&&!rm){const rio=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target);}});},{threshold:.2});document.querySelectorAll('.step').forEach(el=>rio.observe(el));}
 if(!rm&&matchMedia('(pointer:fine)').matches){document.querySelectorAll('.btn.p').forEach(b=>{b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.12}px,${(e.clientY-r.top-r.height/2)*.16}px)`;});b.addEventListener('pointerleave',()=>{b.style.transform='';});});}
 document.getElementById('browseBtn').addEventListener('click',e=>{e.preventDefault();document.getElementById('library').scrollIntoView({behavior:rm?'auto':'smooth',block:'start'});});
+
+/* clipo-style loader wipe */
+const loader=document.getElementById('loader');
+if(loader){const kill=()=>setTimeout(()=>{loader.classList.add('done');setTimeout(()=>{loader.style.display='none';},650);},550);if(rm){loader.style.display='none';}else if(document.readyState==='complete'){kill();}else{window.addEventListener('load',kill);}}
 
 render();
 })();
