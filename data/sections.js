@@ -35,7 +35,7 @@ Output: one self-contained block, no external dependencies.`,
   .badge{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);
     border:1px solid var(--border);border-radius:999px;padding:5px 12px}
   .badge b{color:var(--ink);font-weight:600}
-  .dot{width:6px;height:6px;border-radius:50%;background:#16a34a}
+  .dot{width:6px;height:6px;border-radius:50%;background:#1F45FF}
   h1{font-size:44px;line-height:1.05;letter-spacing:-.03em;margin:20px 0 0;font-weight:700}
   p.sub{color:var(--muted);font-size:17px;max-width:52ch;margin:16px auto 0;line-height:1.55}
   .cta{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}

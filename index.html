@@ -43,15 +43,16 @@ a{color:inherit;text-decoration:none}
 
 /* hero */
 .hero{padding:56px 0 46px;border-bottom:1px solid var(--ink);position:relative}
-.metaTR{position:absolute;top:26px;right:30px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--faint);text-align:right;line-height:1.7}
+.metaTR{position:absolute;top:26px;right:30px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--grey);text-align:right;line-height:1.7}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .kick{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);display:flex;align-items:center;gap:11px}
 .kick .sq{width:7px;height:7px;background:var(--cobalt)}
 .display{font-family:var(--arch);font-weight:800;font-size:clamp(46px,10.5vw,150px);line-height:.86;letter-spacing:-.04em;text-transform:uppercase;margin:22px 0 0;max-width:12ch}
 .lede{font-family:var(--arch);font-weight:400;font-size:clamp(16px,1.9vw,19px);color:var(--ink2);max-width:56ch;margin:26px 0 0}
-.readout{font-family:var(--mono);font-size:clamp(11px,1.5vw,13.5px);background:var(--ink);color:var(--paper);padding:11px 14px;display:inline-block;margin-top:26px;max-width:100%;overflow:hidden;white-space:nowrap}
+.readout{font-family:var(--mono);font-size:clamp(11px,1.5vw,13.5px);background:#0C0D10;color:#E8E8E4;padding:11px 14px;display:inline-block;margin-top:26px;max-width:100%;overflow:hidden;white-space:nowrap;border:1px solid #23252B}
 .readout .op{color:#8FA2FF}
-.readout .cm{color:var(--faint)}
-.readout .caret{color:var(--paper);margin-left:1px}
+.readout .cm{color:#8A8A82}
+.readout .caret{color:#E8E8E4;margin-left:1px}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
 .btn{font-family:var(--arch);font-weight:700;font-size:14px;padding:13px 22px;cursor:pointer;display:inline-flex;align-items:center;gap:9px;border:1px solid var(--ink);background:transparent;color:var(--ink);transition:transform .16s cubic-bezier(.2,.8,.2,1),background .16s,color .16s;will-change:transform}
 .btn svg{width:16px;height:16px}
@@ -80,7 +81,7 @@ a{color:inherit;text-decoration:none}
 .chips{display:flex;gap:7px;flex-wrap:wrap}
 .chip{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--grey);cursor:pointer;background:transparent;border:1px solid var(--line2);padding:7px 11px;transition:all .15s}
 .chip:hover{border-color:var(--ink);color:var(--ink)}
-.chip[aria-pressed="true"]{background:transparent;border-color:var(--cobalt);color:var(--cobalt)}
+.chip[aria-pressed="true"]{background:var(--wash);border-color:var(--cobalt);color:var(--cobalt-ink);font-weight:700}
 .search{position:relative;margin-left:auto;flex:1;min-width:180px;max-width:280px}
 .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--grey)}
 .search input{width:100%;font-family:var(--mono);font-size:12.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line2);padding:10px 12px 10px 34px;transition:border-color .15s}
@@ -179,7 +180,7 @@ footer.site{padding:36px 0 56px}
     <span class="metaTR">REFERENCE LIBRARY<br/>WEB / APP · v1<br/>08 SECTIONS</span>
     <div class="kick"><span class="sq"></span>Reference library // web · app</div>
     <h1 class="display">Proof over <span class="c">prompts.</span></h1>
-    <p class="lede">A reference library of web &amp; app sections. Copy the prompt, or copy the code — every preview is compiled from the exact code you take. What you see is what you ship.</p>
+    <p class="lede">A reference library of web &amp; app sections. Copy the prompt, or copy the code — every preview is rendered from the exact code you take. What you see is what you ship.</p>
     <div class="readout mono" aria-hidden="true">&gt; render(section) <span class="op">===</span> preview&nbsp;&nbsp;<span class="cm">// verified</span><span class="caret">▋</span></div>
     <div class="cta">
       <a class="btn p" id="browseBtn" href="#library">Browse the library</a>
@@ -188,13 +189,14 @@ footer.site{padding:36px 0 56px}
   </section>
 </div>
 
-<div class="band"><div class="wrap"><div class="steps">
+<div class="band"><div class="wrap"><h2 class="sr-only">How it works</h2><div class="steps">
   <div class="step"><div class="n">01 / BROWSE</div><h3>Find the section</h3><p>Filter by surface and by the tool you build with.</p></div>
   <div class="step"><div class="n">02 / TAKE</div><h3>Prompt or code</h3><p>Copy a tuned prompt for your stack, or self-contained code. <b>No build step.</b></p></div>
-  <div class="step"><div class="n">03 / TRUST</div><h3>The render is the proof</h3><p>Every preview is compiled from the exact code you copied. <b>Proof, not vibes.</b></p></div>
+  <div class="step"><div class="n">03 / TRUST</div><h3>The render is the proof</h3><p>Every preview is rendered from the exact code you copied. <b>Proof, not vibes.</b></p></div>
 </div></div></div>
 
 <div id="library"></div>
+<h2 class="sr-only">Section library</h2>
 <div class="controls"><div class="wrap"><div class="crow">
   <div class="seg" role="group" aria-label="Filter by surface">
     <button data-cat="all" aria-pressed="true">ALL</button>
@@ -217,7 +219,7 @@ footer.site{padding:36px 0 56px}
 <footer class="site"><div class="wrap foot">
   <span class="big">GROUNDTRUTH</span> — a reference library by <a href="https://rahim1845.vercel.app" target="_blank" rel="noopener">Rahim</a>.<br/>
   A study in trustworthy AI-native design.<br/>
-  <span style="color:var(--ink)">The preview is compiled from the exact HTML/CSS you copy — that link is guaranteed.</span> Prompts are tuned starting points; model output varies by tool.
+  <span style="color:var(--ink)">The preview is rendered from the exact HTML/CSS you copy — that link is guaranteed.</span> Prompts are tuned starting points; model output varies by tool.
 </div></footer>
 
 <div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
@@ -237,7 +239,7 @@ footer.site{padding:36px 0 56px}
       </div>
       <div class="block">
         <div class="bhead">
-          <span class="l">// CODE — SELF-CONTAINED <span class="g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>compiles the preview above</span></span>
+          <span class="l">// CODE — SELF-CONTAINED <span class="g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>renders the preview above</span></span>
           <button class="mini" id="copyCodeBtn" style="flex:none;padding:8px 14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg><span>Copy code</span></button>
         </div>
         <pre><code id="codeText"></code></pre>
@@ -247,7 +249,7 @@ footer.site{padding:36px 0 56px}
   </div>
 </div>
 
-<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="toastMsg">Copied</span></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="toastMsg">Copied</span></div>
 
 <script src="data/sections.js"></script>
 <script>
@@ -257,6 +259,9 @@ const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const grid=document.getElementById('grid'),empty=document.getElementById('empty'),count=document.getElementById('count'),toolChips=document.getElementById('toolChips'),searchInput=document.getElementById('search');
 const ALL_TOOLS=[...new Set(S.flatMap(s=>s.tools))];
 let state={cat:'all',tools:new Set(),q:''};
+function fitPreview(frame){const iframe=frame.querySelector('iframe');if(!iframe)return;const DW=1200,w=frame.clientWidth;if(!w)return;const scale=w/DW;iframe.style.width=DW+'px';iframe.style.height=Math.round(frame.clientHeight/scale)+'px';iframe.style.transform='scale('+scale+')';iframe.style.transformOrigin='0 0';}
+function fitAll(){document.querySelectorAll('.grid .frame').forEach(fitPreview);}
+let _rz;window.addEventListener('resize',()=>{clearTimeout(_rz);_rz=setTimeout(fitAll,150);});
 const iCopy='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
 const iChk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 
@@ -296,7 +301,8 @@ function render(){
   empty.hidden=list.length!==0;
   count.textContent=`[ ${String(list.length).padStart(2,'0')} ] sections · preview = copied code`;
   grid.querySelectorAll('[data-copy]').forEach(btn=>{btn.addEventListener('click',e=>{e.stopPropagation();const s=S.find(x=>x.id===btn.dataset.id);copyText(btn.dataset.copy==='prompt'?s.prompt:s.code,btn.dataset.copy==='prompt'?'Prompt copied':'Code copied');flash(btn);});});
-  grid.querySelectorAll('.frame[data-open]').forEach(f=>{const open=()=>openSheet(f.dataset.open);f.addEventListener('click',open);f.addEventListener('mouseenter',()=>{if(!rm){f.classList.remove('scan-run');void f.offsetWidth;f.classList.add('scan-run');setTimeout(()=>f.classList.remove('scan-run'),1200);}});f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});});
+  grid.querySelectorAll('.frame[data-open]').forEach(f=>{const open=()=>openSheet(f.dataset.open,f);f.addEventListener('click',open);f.addEventListener('mouseenter',()=>{if(!rm){f.classList.remove('scan-run');void f.offsetWidth;f.classList.add('scan-run');setTimeout(()=>f.classList.remove('scan-run'),1200);}});f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});});
+  requestAnimationFrame(fitAll);
 }
 function flash(btn){btn.classList.add('copied');const sp=btn.querySelector('span');const pv=sp?sp.textContent:'';if(sp)sp.textContent='Copied';setTimeout(()=>{btn.classList.remove('copied');if(sp)sp.textContent=pv;},1300);}
 function copyText(t,m){const d=()=>toast(m);if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(d).catch(()=>fb(t,d));}else fb(t,d);}
@@ -304,10 +310,11 @@ function fb(t,cb){const ta=document.createElement('textarea');ta.value=t;ta.styl
 const toastEl=document.getElementById('toast'),toastMsg=document.getElementById('toastMsg');let tt;
 function toast(m){toastMsg.textContent=m;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove('show'),1600);}
 
-const scrim=document.getElementById('scrim'),sheetTitle=document.getElementById('sheetTitle'),sheetSpec=document.getElementById('sheetSpec'),bigFrame=document.getElementById('bigFrame'),promptText=document.getElementById('promptText'),codeText=document.getElementById('codeText');
-let cur=null;
-function openSheet(id){const s=S.find(x=>x.id===id);if(!s)return;cur=id;sheetTitle.textContent=s.title;sheetSpec.innerHTML=`<span class="cat">${s.category.toUpperCase()}</span><span class="dot"></span>${s.type}<span class="dot"></span><span class="vf">${iChk} verified</span>`;bigFrame.srcdoc=s.code;promptText.textContent=s.prompt;codeText.textContent=s.code;scrim.hidden=false;requestAnimationFrame(()=>scrim.classList.add('open'));document.body.style.overflow='hidden';document.getElementById('closeBtn').focus();}
-function closeSheet(){scrim.classList.remove('open');document.body.style.overflow='';setTimeout(()=>{scrim.hidden=true;bigFrame.srcdoc='';},200);}
+const scrim=document.getElementById('scrim'),sheet=document.getElementById('sheet'),sheetTitle=document.getElementById('sheetTitle'),sheetSpec=document.getElementById('sheetSpec'),bigFrame=document.getElementById('bigFrame'),promptText=document.getElementById('promptText'),codeText=document.getElementById('codeText');
+let cur=null,lastTrigger=null;
+function openSheet(id,trigger){const s=S.find(x=>x.id===id);if(!s)return;cur=id;lastTrigger=trigger||document.activeElement;sheetTitle.textContent=s.title;sheetSpec.innerHTML=`<span class="cat">${s.category.toUpperCase()}</span><span class="dot"></span>${s.type}<span class="dot"></span><span class="vf">${iChk} verified</span>`;bigFrame.srcdoc=s.code;promptText.textContent=s.prompt;codeText.textContent=s.code;scrim.hidden=false;requestAnimationFrame(()=>scrim.classList.add('open'));document.body.style.overflow='hidden';document.getElementById('closeBtn').focus();}
+function closeSheet(){scrim.classList.remove('open');document.body.style.overflow='';setTimeout(()=>{scrim.hidden=true;bigFrame.srcdoc='';},200);if(lastTrigger){try{lastTrigger.focus();}catch(e){}}}
+scrim.addEventListener('keydown',e=>{if(e.key!=='Tab'||scrim.hidden)return;const list=[...sheet.querySelectorAll('button,[href],input,[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled&&el.offsetParent!==null);if(!list.length)return;const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
 document.getElementById('closeBtn').addEventListener('click',closeSheet);
 scrim.addEventListener('click',e=>{if(e.target===scrim)closeSheet();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!scrim.hidden)closeSheet();});
