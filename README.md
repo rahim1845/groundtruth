@@ -53,6 +53,14 @@ All content lives in one file: [`data/sections.js`](data/sections.js). Append an
 
 The only rule: **`code` must be exactly what renders the preview** — that's the whole promise. Write the section as portable HTML/CSS so it works anywhere and the preview stays honest.
 
+### Working agreement — `Add specimen:`
+
+To add cards (aka **specimens**) to the library, start the request with the keyword **`Add specimen:`**. It means one thing precisely: **append entries to `data/sections.js` only — do not change the site design, layout, hero, CSS, or motion.**
+
+> **Add specimen:** research trending web sections and add the 6 best, tagged v0 + Cursor.
+
+Anything about design or layout is a **separate** request and must never be triggered by `Add specimen:`. The full rule (auto-loaded by an AI assistant working in this repo) lives in [`CLAUDE.md`](CLAUDE.md).
+
 ## Structure
 
 ```
