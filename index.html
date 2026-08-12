@@ -345,7 +345,7 @@ function render(){
         </div>
       </div>`;
     grid.appendChild(card);
-    card.querySelector('iframe').srcdoc=s.code;
+    card.querySelector('iframe').srcdoc='<style>html,body{overflow:hidden!important}::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}</style>'+s.code;
     if(io)io.observe(card);else card.classList.add('in');
   });
   empty.hidden=list.length!==0;
