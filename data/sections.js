@@ -844,5 +844,192 @@ Output: one self-contained block.`,
   <div class="item"><div class="av">JP</div><div><div class="txt"><b>Jess Park</b> deployed <b>v2.4</b> to production</div><div class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8 8 10 4.6-2 8-5 8-10V6z"/></svg>3 hours ago</div></div></div>
   <div class="item"><div class="av">RK</div><div><div class="txt"><b>Ravi Kumar</b> commented on <b>Onboarding revamp</b></div><div class="time">Yesterday</div></div></div>
 </div>`
+  },
+  {
+    id:"app-login", title:"Sign-in Card", category:"App", type:"Auth",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a centered SIGN-IN card for a web app.
+
+Layout (single card, max-width ~400px, vertically centered on a soft page):
+- Small square brand mark + product name at top
+- Title "Welcome back" + one muted line of subtext
+- Email field and password field, labels above 44px-tall inputs
+- A row: "Remember me" on the left, "Forgot password?" link on the right
+- Primary full-width "Sign in" button (solid accent)
+- An "or" divider
+- Two secondary full-width buttons: continue with Google, continue with GitHub
+- Footer line: "New here? Create an account"
+
+Style constraints:
+- Neutral palette: near-white page (#f5f6f8), white card, near-black ink, one restrained accent (#1F45FF)
+- System font, 13-14px base, 1px hairline borders, 10-12px radii, no heavy shadows
+- No gradients, no stock imagery, no emoji
+
+Do NOT: use lorem, add social clutter, or over-shadow the card. Real, calm copy.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF;--page:#f5f6f8}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);
+    background:var(--page);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px}
+  .card{width:100%;max-width:400px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px 26px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .brand .mk{width:22px;height:22px;border-radius:6px;background:var(--accent)}
+  h1{font-size:22px;letter-spacing:-.02em;margin:22px 0 4px}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 20px}
+  label{display:block;font-size:12.5px;font-weight:600;margin:0 0 6px}
+  .field{margin-bottom:14px}
+  input{width:100%;height:44px;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-size:14px;color:var(--ink);background:#fff;outline:none}
+  input:focus{border-color:var(--accent)}
+  .row{display:flex;align-items:center;justify-content:space-between;margin:2px 0 18px;font-size:12.5px}
+  .rem{display:flex;align-items:center;gap:7px;color:var(--muted)}
+  .rem input{width:14px;height:14px;accent-color:var(--accent)}
+  .link{color:var(--accent);text-decoration:none;font-weight:600}
+  .btn{width:100%;height:44px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:9px}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;margin-bottom:16px}
+  .btn.ghost{margin-top:10px}
+  .btn svg{width:16px;height:16px}
+  .div{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:4px 0 14px}
+  .div::before,.div::after{content:"";flex:1;height:1px;background:var(--border)}
+  .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
+</style>
+<div class="card">
+  <div class="brand"><span class="mk"></span>Northwind</div>
+  <h1>Welcome back</h1>
+  <p class="sub">Sign in to your workspace to continue.</p>
+  <div class="field"><label>Email</label><input type="email" value="you@company.com"></div>
+  <div class="field"><label>Password</label><input type="password" value="............"></div>
+  <div class="row"><span class="rem"><input type="checkbox" checked>Remember me</span><a class="link" href="#">Forgot password?</a></div>
+  <button class="btn primary">Sign in</button>
+  <div class="div">or</div>
+  <button class="btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 11v2.9h4.1c-.2 1.1-1.3 3.1-4.1 3.1a4.6 4.6 0 0 1 0-9.2c1.3 0 2.2.5 2.7 1l2-1.9A7.6 7.6 0 1 0 12 19.6c4.4 0 7.3-3.1 7.3-7.4 0-.5 0-.9-.1-1.2z"/></svg>Continue with Google</button>
+  <button class="btn ghost"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05a9.4 9.4 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>Continue with GitHub</button>
+  <div class="foot">New here? <a class="link" href="#">Create an account</a></div>
+</div>`
+  },
+  {
+    id:"web-product", title:"Product Cards", category:"Web", type:"Commerce",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a row of three e-commerce PRODUCT CARDS.
+
+Each card (equal width, responsive grid, ~320px each):
+- Square media area with a soft solid tint (no photo), a small "New" or "-20%" badge top-left, a wishlist heart top-right
+- Product title (one line) + short muted category
+- Price row: current price bold, optional compare-at price struck through
+- A 5-star rating with a small review count
+- Full-width "Add to cart" button, quiet until hover
+
+Style constraints:
+- Neutral palette: white cards on near-white page, near-black ink, one restrained accent (#1F45FF), muted greys
+- System font, 13-14px base, 1px hairline borders, 14-16px radii, no drop shadows
+- No gradients beyond a flat tint, no stock imagery, no emoji
+
+Do NOT: use lorem or fake five stars on everything. Real names, honest ratings.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF;--page:#f6f7f9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--page);padding:34px 24px}
+  .grid{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden}
+  .media{position:relative;aspect-ratio:4/3;background:var(--t)}
+  .badge{position:absolute;top:12px;left:12px;background:var(--ink);color:#fff;font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
+  .heart{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+  .heart svg{width:15px;height:15px;color:var(--muted)}
+  .body{padding:14px 15px 16px}
+  .cat{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+  h3{font-size:15.5px;letter-spacing:-.01em;margin:3px 0 8px}
+  .price{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+  .price .now{font-weight:700;font-size:16px}
+  .price .was{color:var(--muted);text-decoration:line-through;font-size:13px}
+  .stars{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;margin-bottom:14px}
+  .stars .s{color:var(--accent);letter-spacing:1px}
+  .add{width:100%;height:40px;border-radius:10px;border:1px solid var(--ink);background:#fff;color:var(--ink);font-weight:600;font-size:13.5px;cursor:pointer}
+  .add:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+</style>
+<div class="grid">
+  <div class="card">
+    <div class="media" style="--t:#e9edff"><span class="badge">New</span><span class="heart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></span></div>
+    <div class="body"><div class="cat">Desk</div><h3>Aperture Monitor Arm</h3><div class="price"><span class="now">$139</span><span class="was">$169</span></div><div class="stars"><span class="s">★★★★★</span>4.8 (212)</div><button class="add">Add to cart</button></div>
+  </div>
+  <div class="card">
+    <div class="media" style="--t:#eef1f4"><span class="badge" style="background:var(--accent)">-20%</span><span class="heart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></span></div>
+    <div class="body"><div class="cat">Audio</div><h3>Lumen Wireless Buds</h3><div class="price"><span class="now">$96</span><span class="was">$120</span></div><div class="stars"><span class="s">★★★★☆</span>4.3 (89)</div><button class="add">Add to cart</button></div>
+  </div>
+  <div class="card">
+    <div class="media" style="--t:#eafaf1"><span class="heart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></span></div>
+    <div class="body"><div class="cat">Paper</div><h3>Field Notebook, A5</h3><div class="price"><span class="now">$18</span></div><div class="stars"><span class="s">★★★★★</span>4.9 (540)</div><button class="add">Add to cart</button></div>
+  </div>
+</div>`
+  },
+  {
+    id:"web-nav", title:"Navigation Bar", category:"Web", type:"Navigation",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a top NAVIGATION BAR for a marketing site.
+
+Layout (full-width bar, content max-width ~1120px):
+- Left: square brand mark + wordmark
+- Center: 5 nav links (Product, Solutions, Pricing, Docs, Changelog); one carries a small "New" tag
+- Right: a ghost "Sign in" and a solid accent "Get started" pill
+- A 1px hairline under the bar; calm, sticky-looking
+- Beneath the bar, a thin page-context strip (breadcrumb) so the preview reads as the top of a real page
+
+Style constraints:
+- Neutral palette: white bar, near-black ink, muted link greys, one restrained accent (#1F45FF)
+- System font, 13-14px, 999px pills, 1px borders, no shadows
+- No gradients, no mega-menu, no emoji, no desktop hamburger
+
+Do NOT: cram 8 links or use lorem.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#5b626b;--border:#e6e8eb;--accent:#1F45FF}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff}
+  .bar{border-bottom:1px solid var(--border)}
+  .in{max-width:1120px;margin:0 auto;height:64px;padding:0 24px;display:flex;align-items:center;gap:28px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15.5px;letter-spacing:-.01em}
+  .brand .mk{width:22px;height:22px;border-radius:6px;background:var(--accent)}
+  nav{display:flex;align-items:center;gap:22px;margin-left:8px}
+  nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:7px}
+  nav a:hover{color:var(--ink)}
+  .tag{font-size:10px;font-weight:700;color:var(--accent);background:#eef1ff;border-radius:999px;padding:2px 6px}
+  .right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .btn{font-size:13.5px;font-weight:600;border-radius:999px;padding:9px 16px;cursor:pointer;text-decoration:none}
+  .ghost{color:var(--ink);border:1px solid var(--border);background:#fff}
+  .solid{color:#fff;background:var(--accent);border:1px solid var(--accent)}
+  .strip{max-width:1120px;margin:0 auto;padding:20px 24px 26px;color:var(--muted);font-size:13px}
+  .crumb{display:flex;align-items:center;gap:8px}
+  .crumb b{color:var(--ink)}
+  .crumb svg{width:13px;height:13px}
+</style>
+<div class="bar"><div class="in">
+  <div class="brand"><span class="mk"></span>Northwind</div>
+  <nav>
+    <a href="#">Product</a>
+    <a href="#">Solutions</a>
+    <a href="#">Pricing</a>
+    <a href="#">Docs</a>
+    <a href="#">Changelog <span class="tag">New</span></a>
+  </nav>
+  <div class="right">
+    <a class="btn ghost" href="#">Sign in</a>
+    <a class="btn solid" href="#">Get started</a>
+  </div>
+</div></div>
+<div class="strip">
+  <div class="crumb"><span>Home</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><b>Product</b></div>
+</div>`
   }
 ];
