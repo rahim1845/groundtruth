@@ -25,7 +25,9 @@ This distinction *is* the product's point of view: prompt libraries elsewhere ov
 
 ## Run it
 
-It's a static site — no build step, no dependencies.
+It's a static site — no build step, no dependencies. `index.html` is fully self-contained:
+fonts, motion, and the section data are all inlined, so there are no external requests that
+can fail (and no empty-library surprises on a host that serves paths differently).
 
 ```bash
 # any static server works; here's one:
@@ -33,11 +35,13 @@ npx serve .
 # then open the printed localhost URL
 ```
 
-Opening `index.html` directly via `file://` also works (the data loads via a `<script>` tag, not `fetch`).
+Opening `index.html` directly via `file://` works too — everything it needs is in the file.
 
 ## Add a section
 
-All content lives in one file: [`data/sections.js`](data/sections.js). Append an object:
+Section content lives in [`data/sections.js`](data/sections.js) — the readable source of
+truth — and is also inlined into `index.html` (the deployed page reads the inline copy, so
+keep the two in sync). Append an object:
 
 ```js
 {
@@ -64,8 +68,9 @@ Anything about design or layout is a **separate** request and must never be trig
 ## Structure
 
 ```
-index.html         # the app (chrome, filtering, copy, modal, theming)
-data/sections.js   # the section library — the source of truth
+index.html         # the whole app, self-contained (chrome, filtering, copy, modal,
+                   # theming, inlined fonts + motion + section data)
+data/sections.js   # the section library — the readable source of truth (mirrored inline)
 ```
 
 ## Deploy
@@ -75,7 +80,7 @@ data/sections.js   # the section library — the source of truth
 
 ## Credits
 
-Built by **Rahim**, product designer — a study in trustworthy AI-native design.
+Built by **Rahim**, product designer — a reference library for building with AI.
 More of the thinking: [rahim1845.vercel.app](https://rahim1845.vercel.app)
 
 ## License
