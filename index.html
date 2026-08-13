@@ -1347,6 +1347,545 @@ Output: one self-contained block, no external dependencies.`,
 <div class="strip">
   <div class="crumb"><span>Home</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><b>Product</b></div>
 </div>`
+  },
+  {
+    id:"app-table", title:"Data Table", category:"App", type:"Table",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a DATA TABLE for a web app (customers/invoices style).
+
+Layout:
+- A card containing a table with a header row and ~5 body rows
+- Columns: checkbox, Name (avatar initials + name + email), Status (colored pill), Plan, MRR (right-aligned), a row-actions button
+- The sorted header cell shows a small caret and is slightly bolder
+- Rows separated by 1px hairlines, hover tint, no zebra striping
+- A slim toolbar above: result count on the left, a ghost "Export" and a solid "Add customer" on the right
+
+Style constraints:
+- Neutral palette: white card on near-white page, near-black ink, muted greys, one restrained accent (#1F45FF); status pills in green/amber/grey tints
+- System font, 13-14px, 1px hairlines, 12-14px card radius, no drop shadows
+- Right-align numeric columns; tabular figures
+
+Do NOT: use lorem or emoji. Real names, plausible numbers.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF;--page:#f6f7f9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--page);padding:28px 24px}
+  .card{max-width:1000px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+  .bar .n{font-size:13px;color:var(--muted)}
+  .bar .n b{color:var(--ink);font-weight:700}
+  .actions{display:flex;gap:8px}
+  .btn{font-size:13px;font-weight:600;border-radius:9px;padding:8px 13px;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--ink)}
+  .btn.solid{background:var(--accent);border-color:var(--accent);color:#fff}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:12px 16px;font-size:13.5px;border-bottom:1px solid var(--border);white-space:nowrap}
+  th{font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);font-weight:600;background:#fbfbfc}
+  th.sort{color:var(--ink)}
+  th .car{margin-left:5px;vertical-align:middle}
+  tbody tr:hover{background:#fafbff}
+  tbody tr:last-child td{border-bottom:0}
+  .r{text-align:right}
+  .who{display:flex;align-items:center;gap:10px}
+  .av{width:30px;height:30px;border-radius:50%;background:#eef1ff;color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .who .nm{font-weight:600}
+  .who .em{color:var(--muted);font-size:12px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px}
+  .pill.ok{background:#e7f6ec;color:#177a3d}
+  .pill.pend{background:#fdf3e2;color:#8a5a12}
+  .pill.off{background:#eef0f2;color:#5b626b}
+  .pill .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .mrr{font-variant-numeric:tabular-nums;font-weight:600}
+  .more{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 8px;border-radius:6px;letter-spacing:1px}
+  .more:hover{background:#f0f1f3;color:var(--ink)}
+  .ck{width:15px;height:15px;accent-color:var(--accent)}
+</style>
+<div class="card">
+  <div class="bar"><div class="n"><b>128</b> customers</div><div class="actions"><button class="btn">Export</button><button class="btn solid">Add customer</button></div></div>
+  <table>
+    <thead><tr>
+      <th style="width:38px"><input class="ck" type="checkbox"></th>
+      <th class="sort">Name <svg class="car" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></th>
+      <th>Status</th><th>Plan</th><th class="r">MRR</th><th style="width:44px"></th>
+    </tr></thead>
+    <tbody>
+      <tr><td><input class="ck" type="checkbox"></td><td><div class="who"><span class="av">MA</span><div><div class="nm">Mara Adeyemi</div><div class="em">mara@northwind.io</div></div></div></td><td><span class="pill ok"><span class="d"></span>Active</span></td><td>Scale</td><td class="r mrr">$1,290</td><td><button class="more">...</button></td></tr>
+      <tr><td><input class="ck" type="checkbox"></td><td><div class="who"><span class="av">SL</span><div><div class="nm">Sam Lorne</div><div class="em">sam@vertex.co</div></div></div></td><td><span class="pill pend"><span class="d"></span>Trialing</span></td><td>Pro</td><td class="r mrr">$0</td><td><button class="more">...</button></td></tr>
+      <tr><td><input class="ck" type="checkbox"></td><td><div class="who"><span class="av">JP</span><div><div class="nm">Jess Park</div><div class="em">jess@lumen.app</div></div></div></td><td><span class="pill ok"><span class="d"></span>Active</span></td><td>Scale</td><td class="r mrr">$980</td><td><button class="more">...</button></td></tr>
+      <tr><td><input class="ck" type="checkbox"></td><td><div class="who"><span class="av">RK</span><div><div class="nm">Ravi Kumar</div><div class="em">ravi@halcyon.io</div></div></div></td><td><span class="pill off"><span class="d"></span>Churned</span></td><td>Pro</td><td class="r mrr">$0</td><td><button class="more">...</button></td></tr>
+      <tr><td><input class="ck" type="checkbox"></td><td><div class="who"><span class="av">EN</span><div><div class="nm">Elin Norberg</div><div class="em">elin@cedar.co</div></div></div></td><td><span class="pill ok"><span class="d"></span>Active</span></td><td>Team</td><td class="r mrr">$460</td><td><button class="more">...</button></td></tr>
+    </tbody>
+  </table>
+</div>`
+  },
+  {
+    id:"web-footer", title:"Site Footer", category:"Web", type:"Footer",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a marketing SITE FOOTER.
+
+Layout (full width, content max-width ~1120px):
+- Left block: brand mark + wordmark, a one-line description, and a small "All systems operational" status chip
+- Right block: four link columns (Product, Company, Resources, Legal) with clear headings, 4-5 links each
+- A 1px divider, then a bottom bar: copyright on the left, a row of small social icon buttons on the right
+
+Style constraints:
+- Neutral palette: white background, near-black ink, muted link greys that darken on hover, one restrained accent (#1F45FF) used only for the brand mark and status dot
+- System font, 13-14px, generous column gaps, 1px hairlines, no shadows
+- No newsletter form here, no gradients, no emoji
+
+Do NOT: cram legal microtext or use lorem. Real, plausible labels.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff}
+  .ft{max-width:1120px;margin:0 auto;padding:48px 24px 26px}
+  .top{display:grid;grid-template-columns:1.4fr 2fr;gap:40px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+  .brand .mk{width:22px;height:22px;border-radius:6px;background:var(--accent)}
+  .desc{color:var(--muted);font-size:13.5px;line-height:1.6;margin:14px 0 16px;max-width:34ch}
+  .status{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:5px 11px}
+  .status .d{width:7px;height:7px;border-radius:50%;background:#22a559}
+  .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  h4{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);margin:0 0 12px}
+  .cols a{display:block;color:var(--muted);text-decoration:none;font-size:13.5px;padding:5px 0}
+  .cols a:hover{color:var(--ink)}
+  .barf{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);margin-top:36px;padding-top:20px}
+  .cp{color:var(--muted);font-size:12.5px}
+  .soc{display:flex;gap:8px}
+  .soc a{width:32px;height:32px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  .soc a:hover{color:var(--ink);border-color:var(--ink)}
+  .soc svg{width:15px;height:15px}
+  @media(max-width:720px){.top{grid-template-columns:1fr;gap:28px}.cols{grid-template-columns:repeat(2,1fr)}}
+</style>
+<div class="ft">
+  <div class="top">
+    <div>
+      <div class="brand"><span class="mk"></span>Northwind</div>
+      <p class="desc">Product analytics that answer questions in plain language. Built for teams who would rather ship than babysit dashboards.</p>
+      <span class="status"><span class="d"></span>All systems operational</span>
+    </div>
+    <div class="cols">
+      <div><h4>Product</h4><a href="#">Overview</a><a href="#">Features</a><a href="#">Pricing</a><a href="#">Changelog</a><a href="#">Docs</a></div>
+      <div><h4>Company</h4><a href="#">About</a><a href="#">Careers</a><a href="#">Customers</a><a href="#">Blog</a></div>
+      <div><h4>Resources</h4><a href="#">Guides</a><a href="#">API</a><a href="#">Status</a><a href="#">Community</a></div>
+      <div><h4>Legal</h4><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Security</a><a href="#">DPA</a></div>
+    </div>
+  </div>
+  <div class="barf">
+    <span class="cp">© 2026 Northwind Labs, Inc.</span>
+    <div class="soc">
+      <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 3h3l-7 8 8 10h-6l-5-6-5 6H3l8-9L3 3h6l4 5z"/></svg></a>
+      <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0zM3.4 8.4h3.1V21H3.4V8.4zM9 8.4h3v1.7h.05c.42-.8 1.45-1.7 3-1.7 3.2 0 3.8 2.1 3.8 4.9V21h-3.1v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9V8.4z"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.7-1.8C19.2 5 12 5 12 5s-7.2 0-8.9.5A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.7 1.8C4.8 19 12 19 12 19s7.2 0 8.9-.5a2.5 2.5 0 0 0 1.7-1.8C23 15.2 23 12 23 12zM10 15.5v-7l6 3.5-6 3.5z"/></svg></a>
+    </div>
+  </div>
+</div>`
+  },
+  {
+    id:"web-cta", title:"CTA / Newsletter", category:"Web", type:"Capture",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a closing CALL-TO-ACTION band with email capture.
+
+Layout (centered, max-width ~860px panel):
+- Small eyebrow label
+- One-line headline, tight tracking
+- One muted supporting sentence
+- An inline email form: email input + solid "Subscribe" button on one row (stacks on narrow)
+- A tiny reassurance line under the form
+
+Use the restrained treatment: near-black ink on a soft neutral panel with one accent, not a loud full-bleed color block.
+
+Style constraints:
+- Neutral palette: soft panel (#f4f5f7), near-black ink, one restrained accent (#1F45FF)
+- System font, 13-15px, consistent radii, 1px borders, no shadows
+- No gradients, no stock imagery, no emoji
+
+Do NOT: overpromise or use lorem. Real, calm copy.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e2e4e8;--accent:#1F45FF;--panel:#f4f5f7}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;padding:40px 24px}
+  .band{max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:44px 32px;text-align:center}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h2{font-size:30px;line-height:1.1;letter-spacing:-.03em;margin:14px 0 0;font-weight:700}
+  p.sub{color:var(--muted);font-size:15px;max-width:46ch;margin:12px auto 22px;line-height:1.55}
+  form{display:flex;gap:10px;max-width:440px;margin:0 auto}
+  input{flex:1;height:46px;border:1px solid var(--border);border-radius:11px;padding:0 14px;font-size:14px;background:#fff;color:var(--ink);outline:none}
+  input:focus{border-color:var(--accent)}
+  button{height:46px;padding:0 20px;border-radius:11px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .fine{color:var(--muted);font-size:12px;margin-top:12px}
+  @media(max-width:520px){form{flex-direction:column}}
+</style>
+<div class="band">
+  <div class="eyebrow">Ship faster</div>
+  <h2>Get the weekly build log.</h2>
+  <p class="sub">One email every Friday: what we shipped, what broke, and the patterns worth stealing. Read by 14,000+ builders.</p>
+  <form>
+    <input type="email" placeholder="you@company.com">
+    <button type="button">Subscribe</button>
+  </form>
+  <div class="fine">No spam. Unsubscribe anytime.</div>
+</div>`
+  },
+  {
+    id:"app-confirm", title:"Confirmation Dialog", category:"App", type:"Dialog",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a destructive CONFIRMATION DIALOG shown over a dimmed page.
+
+Layout:
+- A dimmed backdrop and a centered dialog card (max-width ~420px)
+- Top: a small circular icon in a soft red tint (trash), then a title ("Delete project?")
+- Body: one or two calm sentences naming the specific item and that it cannot be undone
+- A small detail line summarizing the consequence
+- Footer actions right-aligned: a ghost "Cancel" and a solid red "Delete project"
+
+Style constraints:
+- Neutral palette for page/card; the ONLY color is a destructive red used sparingly (icon tint + primary button)
+- System font, 14px, 16px card radius, 10px button radius, one soft shadow on the dialog is OK
+- No emoji
+
+Do NOT: make both buttons look equally dangerous, or use lorem. Name the real item.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--danger:#d5342b;--page:#eef0f3}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);
+    background:var(--page);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+  .scrim{position:fixed;inset:0;background:rgba(15,17,21,.45)}
+  .dlg{position:relative;width:100%;max-width:420px;background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 30px 70px -30px rgba(0,0,0,.5)}
+  .ic{width:42px;height:42px;border-radius:50%;background:#fdeceb;color:var(--danger);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .ic svg{width:20px;height:20px}
+  h3{font-size:18px;letter-spacing:-.01em;margin:0 0 8px}
+  p{color:var(--muted);font-size:14px;line-height:1.55;margin:0}
+  p b{color:var(--ink);font-weight:700}
+  .detail{margin-top:12px;font-size:12.5px;color:var(--muted);background:#f7f8fa;border:1px solid var(--border);border-radius:9px;padding:9px 11px}
+  .row{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+  .btn{font-size:13.5px;font-weight:600;border-radius:10px;padding:9px 16px;cursor:pointer}
+  .cancel{background:#fff;border:1px solid var(--border);color:var(--ink)}
+  .del{background:var(--danger);border:1px solid var(--danger);color:#fff}
+</style>
+<div class="scrim"></div>
+<div class="dlg">
+  <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></div>
+  <h3>Delete project?</h3>
+  <p>You are about to delete <b>Northwind Analytics</b>. This permanently removes its dashboards, saved views, and API keys. This action cannot be undone.</p>
+  <div class="detail">This will remove 3 dashboards and revoke 2 API keys.</div>
+  <div class="row">
+    <button class="btn cancel">Cancel</button>
+    <button class="btn del">Delete project</button>
+  </div>
+</div>`
+  },
+  {
+    id:"app-chat", title:"AI Chat Thread", category:"App", type:"Chat",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build an AI CHAT thread panel (assistant + user).
+
+Layout (single column, max-width ~640px card):
+- A slim header: assistant name + a small model tag pill, and a subtle "New chat" ghost button
+- A thread of alternating messages. User messages right-aligned in a soft filled bubble; assistant messages left-aligned and borderless with a small square avatar mark. Include one assistant message containing a short inline code block.
+- A composer at the bottom: rounded input with an attach (paperclip) icon on the left and a solid square send button on the right; a tiny helper line beneath
+
+Style constraints:
+- Neutral palette: white, near-black ink, muted greys, one restrained accent (#1F45FF) for the send button and model tag
+- System font, 14px, 14-18px bubble radii, 1px hairlines, no shadows
+- No emoji in the UI chrome
+
+Write real, useful assistant/user copy (a short product question and a concise answer). No lorem.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF;--page:#f6f7f9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--page);padding:24px}
+  .panel{max-width:640px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border)}
+  .head .l{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+  .tag{font-size:11px;font-weight:700;color:var(--accent);background:#eef1ff;border-radius:999px;padding:3px 8px}
+  .new{font-size:12.5px;font-weight:600;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 11px;cursor:pointer;background:#fff}
+  .thread{padding:18px 16px;display:flex;flex-direction:column;gap:16px}
+  .msg{display:flex;gap:10px;max-width:88%}
+  .msg.user{align-self:flex-end}
+  .msg.user .bubble{background:#eef1ff;border:1px solid #dfe4ff;border-radius:16px 16px 4px 16px;padding:10px 13px;font-size:14px;line-height:1.5}
+  .msg.ai .av{width:26px;height:26px;border-radius:7px;background:var(--accent);flex:none;margin-top:2px}
+  .msg.ai .bubble{font-size:14px;line-height:1.6}
+  pre{margin:10px 0 0;background:#0f1115;color:#e8e8ea;border-radius:10px;padding:12px 13px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6}
+  .composer{border-top:1px solid var(--border);padding:12px 14px}
+  .box{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:14px;padding:6px 6px 6px 12px}
+  .box input{flex:1;border:0;outline:none;font-size:14px;color:var(--ink);background:transparent}
+  .clip{color:var(--muted);display:flex}
+  .clip svg{width:18px;height:18px}
+  .send{width:36px;height:36px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .send svg{width:17px;height:17px}
+  .help{color:var(--muted);font-size:11.5px;margin:8px 2px 0}
+</style>
+<div class="panel">
+  <div class="head"><div class="l"><span class="tag">Sonnet 4.5</span>Assistant</div><button class="new">New chat</button></div>
+  <div class="thread">
+    <div class="msg user"><div class="bubble">How do I show a toast only after the save actually succeeds?</div></div>
+    <div class="msg ai"><div class="av"></div><div class="bubble">Fire it in the success branch, not on click. Await the call, then toast:<pre>await save(draft);
+toast("Saved");   // only if save() resolved</pre>That way a failed save never shows a success toast.</div></div>
+    <div class="msg user"><div class="bubble">Perfect — and for errors?</div></div>
+    <div class="msg ai"><div class="av"></div><div class="bubble">Catch the rejection and show an error variant with a Retry action, so the user can recover without losing the draft.</div></div>
+  </div>
+  <div class="composer">
+    <div class="box">
+      <span class="clip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5 12 21a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L9 18.3"/></svg></span>
+      <input placeholder="Message the assistant...">
+      <button class="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="help">Enter to send, Shift+Enter for newline</div>
+  </div>
+</div>`
+  },
+  {
+    id:"app-agent", title:"Agent Run Trace", category:"App", type:"Agent",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build an AGENT RUN trace: a vertical timeline of an agent's steps (plan, tool calls, result).
+
+Layout (card, max-width ~560px):
+- Header: a title ("Agent run") and a small live/duration meta on the right ("running · 12s")
+- A vertical list of steps connected by a thin rail. Each step: a status node (done = filled check, active = accent ring, pending = hollow), a bold step label, and a muted one-line detail. Tool-call steps show a small monospace tag ("tool: web.search")
+- Mix statuses: 3 done, 1 active, 1 pending
+- A slim footer with a "Stop" ghost button and a subtle step/tool counter
+
+Style constraints:
+- Neutral palette: white card, near-black ink, muted greys, one restrained accent (#1F45FF) for the active node and tool tags; a green for the done checks
+- System font, 13-14px, 12-14px card radius, 1px hairlines, monospace only for tool tags
+- No emoji
+
+Write plausible steps for an agent answering a data question. No lorem.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF;--page:#f6f7f9;--ok:#177a3d}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--page);padding:28px 24px}
+  .card{max-width:560px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border)}
+  .head h3{font-size:15px;margin:0;letter-spacing:-.01em}
+  .meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .meta .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .steps{padding:8px 18px 6px;position:relative}
+  .step{position:relative;padding:12px 0 12px 30px}
+  .rail{position:absolute;left:9px;top:8px;bottom:8px;width:2px;background:var(--border)}
+  .node{position:absolute;left:2px;top:14px;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;z-index:1}
+  .node.done{background:var(--ok);border-color:var(--ok);color:#fff}
+  .node.done svg{width:9px;height:9px}
+  .node.active{border-color:var(--accent);box-shadow:0 0 0 3px #eef1ff}
+  .node.active .i{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .lbl{font-size:13.5px;font-weight:600}
+  .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .tt{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--accent);background:#eef1ff;border-radius:6px;padding:1px 6px;margin-left:6px}
+  .foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding:12px 18px}
+  .stop{font-size:12.5px;font-weight:600;color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:7px 13px;background:#fff;cursor:pointer}
+  .count{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--muted)}
+</style>
+<div class="card">
+  <div class="head"><h3>Agent run</h3><span class="meta"><span class="dot"></span>running · 12s</span></div>
+  <div class="steps">
+    <div class="rail"></div>
+    <div class="step"><span class="node done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div class="lbl">Plan the task</div><div class="sub">Break "which plan churns most?" into query + compare steps.</div></div>
+    <div class="step"><span class="node done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div class="lbl">Search the docs<span class="tt">tool: web.search</span></div><div class="sub">Found the churn definition and the events table schema.</div></div>
+    <div class="step"><span class="node done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div class="lbl">Read the dataset<span class="tt">tool: fs.read</span></div><div class="sub">Loaded 42,190 subscription rows from exports/subs.csv.</div></div>
+    <div class="step"><span class="node active"><span class="i"></span></span><div class="lbl">Compute churn by plan<span class="tt">tool: sql.run</span></div><div class="sub">Grouping by plan across a 30-day window...</div></div>
+    <div class="step"><span class="node"></span><div class="lbl">Write the summary</div><div class="sub">Pending — draft the answer with the top-churn plan.</div></div>
+  </div>
+  <div class="foot"><button class="stop">Stop</button><span class="count">4 / 5 steps · 3 tools</span></div>
+</div>`
+  },
+  {
+    id:"web-stats", title:"Stats Band", category:"Web", type:"Metrics",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a marketing STATS / metrics band.
+
+Layout (full width, content max-width ~1040px):
+- A small centered eyebrow + one-line lead
+- A row of four metrics separated by thin vertical rules (stack on narrow). Each metric: a big number with a unit/suffix, and a short muted label beneath
+- The numbers are the hero; everything else stays quiet
+
+Style constraints:
+- Neutral palette: white, near-black ink for numbers, muted greys for labels, one restrained accent (#1F45FF) allowed on the eyebrow only
+- System font; large numbers with tight tracking and tabular figures; 1px hairline rules; no cards, no shadows
+- No emoji
+
+Use plausible, non-round numbers. No lorem.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;padding:52px 24px}
+  .wrap{max-width:1040px;margin:0 auto;text-align:center}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .lead{font-size:20px;letter-spacing:-.02em;margin:10px 0 30px;font-weight:600}
+  .row{display:grid;grid-template-columns:repeat(4,1fr)}
+  .m{padding:8px 18px;border-left:1px solid var(--border)}
+  .m:first-child{border-left:0}
+  .num{font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  .num .u{color:var(--muted);font-weight:700;font-size:26px}
+  .lbl{color:var(--muted);font-size:13.5px;margin-top:10px}
+  @media(max-width:720px){.row{grid-template-columns:repeat(2,1fr);gap:26px}.m{border-left:0}}
+</style>
+<div class="wrap">
+  <div class="eyebrow">Trusted in production</div>
+  <div class="lead">Teams ship on Northwind every day.</div>
+  <div class="row">
+    <div class="m"><div class="num">99.98<span class="u">%</span></div><div class="lbl">Uptime, last 12 months</div></div>
+    <div class="m"><div class="num">12.4<span class="u">k</span></div><div class="lbl">Teams onboarded</div></div>
+    <div class="m"><div class="num">340<span class="u">ms</span></div><div class="lbl">Median query time</div></div>
+    <div class="m"><div class="num">4.9<span class="u">/5</span></div><div class="lbl">Average review score</div></div>
+  </div>
+</div>`
+  },
+  {
+    id:"web-split", title:"Feature Split", category:"Web", type:"Feature",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a FEATURE SPLIT section: text on one side, a visual on the other.
+
+Layout (two columns, content max-width ~1080px; stacks on narrow):
+- Left: a small eyebrow, a two-line headline, a short paragraph, a 3-item checklist with small check icons, and a ghost "Learn more" link with an arrow
+- Right: a self-contained VISUAL built in CSS (no image) — a mini product mock: a card with a header bar, a highlighted metric, and a couple of rows. It should read like a real UI fragment
+- Comfortable padding, generous gap between columns
+
+Style constraints:
+- Neutral palette: white background, near-black ink, muted greys, one restrained accent (#1F45FF) for the checks and the highlighted metric
+- System font, 14-15px body, tight display tracking, 1px borders, at most one soft shadow on the mock
+- No stock imagery, no gradients, no emoji
+
+Write real feature copy. No lorem.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF;--page:#f6f7f9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;padding:56px 24px}
+  .split{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h2{font-size:32px;line-height:1.08;letter-spacing:-.03em;margin:12px 0 0;font-weight:700}
+  p{color:var(--muted);font-size:15px;line-height:1.6;margin:14px 0 18px;max-width:42ch}
+  ul{list-style:none;padding:0;margin:0 0 22px}
+  li{display:flex;align-items:center;gap:10px;font-size:14.5px;padding:7px 0}
+  li .ck{width:20px;height:20px;border-radius:50%;background:#eef1ff;color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none}
+  li .ck svg{width:12px;height:12px}
+  .more{display:inline-flex;align-items:center;gap:7px;color:var(--accent);font-weight:600;font-size:14px;text-decoration:none}
+  .more svg{width:15px;height:15px}
+  .mock{background:var(--page);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 24px 50px -30px rgba(0,0,0,.4)}
+  .mhead{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .mhead .d{width:9px;height:9px;border-radius:50%;background:#d7dae0}
+  .mrow{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:9px}
+  .mrow .t{font-size:13px;color:var(--muted)}
+  .mrow .v{font-size:13px;font-weight:600}
+  .big{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px}
+  .big .k{font-size:12px;color:var(--muted)}
+  .big .n{font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--accent);margin-top:4px}
+  .big .n span{font-size:13px;color:#22a559;font-weight:700;margin-left:8px}
+  @media(max-width:760px){.split{grid-template-columns:1fr;gap:32px}}
+</style>
+<div class="split">
+  <div>
+    <div class="eyebrow">Alerts</div>
+    <h2>Catch anomalies before your customers do.</h2>
+    <p>Northwind watches every metric against its own baseline and pings you the moment something drifts — no thresholds to hand-tune.</p>
+    <ul>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Baseline learned per metric, per segment</li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Routed to Slack, email, or webhook</li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>One click to mute or snooze</li>
+    </ul>
+    <a class="more" href="#">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+  </div>
+  <div class="mock">
+    <div class="mhead"><span class="d"></span><span class="d"></span><span class="d"></span></div>
+    <div class="big"><div class="k">Signups, last 24h</div><div class="n">1,284 <span>+18%</span></div></div>
+    <div style="height:9px"></div>
+    <div class="mrow"><span class="t">Checkout errors</span><span class="v">0.4%</span></div>
+    <div class="mrow"><span class="t">p95 latency</span><span class="v">340 ms</span></div>
+    <div class="mrow"><span class="t">Active alerts</span><span class="v">2</span></div>
+  </div>
+</div>`
+  },
+  {
+    id:"web-articles", title:"Article Cards", category:"Web", type:"Blog",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: senior product designer + front-end engineer.
+Build a row of three BLOG / ARTICLE cards.
+
+Each card (equal width, responsive grid):
+- A thumbnail area with a soft solid tint (no photo) and a small category tag overlaid
+- Title (up to two lines) and a one-line muted excerpt
+- A footer row: a small round author avatar (initials), author name, a dot, a date, and a muted read-time on the right
+
+Style constraints:
+- Neutral palette: white cards, near-black ink, muted greys, one restrained accent (#1F45FF) for the category tag only
+- System font, 13-15px, 1px hairlines, 14-16px radii, no drop shadows
+- No stock imagery, no emoji
+
+Write real, specific titles and excerpts (product/engineering blog voice). No lorem.
+Output: one self-contained block, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--ink:#0f1115;--muted:#6b7280;--border:#e6e8eb;--accent:#1F45FF;--page:#f6f7f9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--page);padding:34px 24px}
+  .grid{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .thumb{position:relative;aspect-ratio:16/9;background:var(--t)}
+  .tag{position:absolute;top:12px;left:12px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;letter-spacing:.02em;padding:4px 9px;border-radius:999px}
+  .body{padding:15px 16px 16px;display:flex;flex-direction:column;flex:1}
+  h3{font-size:16.5px;line-height:1.25;letter-spacing:-.01em;margin:0 0 7px}
+  .ex{color:var(--muted);font-size:13.5px;line-height:1.5;margin:0 0 16px}
+  .foot{display:flex;align-items:center;gap:9px;margin-top:auto;font-size:12.5px;color:var(--muted)}
+  .av{width:26px;height:26px;border-radius:50%;background:#eef1ff;color:var(--accent);font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .who{color:var(--ink);font-weight:600}
+  .dot{width:3px;height:3px;border-radius:50%;background:#c7cbd2}
+  .rt{margin-left:auto}
+</style>
+<div class="grid">
+  <div class="card">
+    <div class="thumb" style="--t:#e9edff"><span class="tag">Engineering</span></div>
+    <div class="body"><h3>How we cut p95 query time from 2.1s to 340ms</h3><p class="ex">The fix was not a bigger box — it was killing three accidental full scans.</p><div class="foot"><span class="av">JP</span><span class="who">Jess Park</span><span class="dot"></span><span>Aug 4</span><span class="rt">6 min</span></div></div>
+  </div>
+  <div class="card">
+    <div class="thumb" style="--t:#eafaf1"><span class="tag">Product</span></div>
+    <div class="body"><h3>Designing alerts people don't turn off</h3><p class="ex">Most alerting fails on trust. Here is the model we replaced thresholds with.</p><div class="foot"><span class="av">MA</span><span class="who">Mara Adeyemi</span><span class="dot"></span><span>Jul 28</span><span class="rt">8 min</span></div></div>
+  </div>
+  <div class="card">
+    <div class="thumb" style="--t:#fdf3e2"><span class="tag">Guide</span></div>
+    <div class="body"><h3>A practical guide to event schema design</h3><p class="ex">Name events for the question you will ask later, not the click you saw today.</p><div class="foot"><span class="av">RK</span><span class="who">Ravi Kumar</span><span class="dot"></span><span>Jul 19</span><span class="rt">11 min</span></div></div>
+  </div>
+</div>`
   }
 ];
 
