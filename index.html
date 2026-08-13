@@ -59,10 +59,6 @@ a{color:inherit;text-decoration:none}
 .btn.p:hover{filter:brightness(1.08)}
 
 /* library intro — quiet heading above the grid */
-.libintro{padding:30px 0 4px}
-.libintro .kick{margin-bottom:0}
-.lib-h{font-family:var(--arch);font-weight:800;font-size:clamp(23px,3vw,34px);letter-spacing:-.025em;margin:12px 0 0}
-.lib-sub{font-family:var(--arch);font-weight:400;font-size:15px;color:var(--ink2);margin:8px 0 0;max-width:54ch}
 
 /* how it works — quiet numbered steps, after the library */
 .how{border-top:1px solid var(--line);margin-top:8px;padding:40px 0 4px}
@@ -97,10 +93,6 @@ a{color:inherit;text-decoration:none}
 .seg button{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--grey);cursor:pointer;background:transparent;border:0;border-right:1px solid var(--line2);padding:9px 15px;transition:color .15s,background .15s}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-.chips{display:flex;gap:7px;flex-wrap:wrap}
-.chip{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--grey);cursor:pointer;background:transparent;border:1px solid var(--line2);padding:7px 11px;transition:all .15s}
-.chip:hover{border-color:var(--ink);color:var(--ink)}
-.chip[aria-pressed="true"]{background:var(--wash);border-color:var(--cobalt);color:var(--cobalt-ink);font-weight:700}
 .search{position:relative;margin-left:auto;flex:1;min-width:180px;max-width:280px}
 .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--grey)}
 .search input{width:100%;font-family:var(--mono);font-size:12.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line2);padding:10px 12px 10px 34px;transition:border-color .15s}
@@ -214,18 +206,12 @@ footer.site{padding:36px 0 56px}
 </div>
 
 <div id="library"></div>
-<div class="wrap libintro">
-  <div class="kick"><span class="sq"></span>The library</div>
-  <h2 class="lib-h">Selected references</h2>
-  <p class="lib-sub">Verified UI sections you can take — copy the code, or the prompt.</p>
-</div>
 <div class="controls"><div class="wrap"><div class="crow">
   <div class="seg" role="group" aria-label="Filter by surface">
     <button data-cat="all" aria-pressed="true">ALL</button>
     <button data-cat="Web" aria-pressed="false">WEB</button>
     <button data-cat="App" aria-pressed="false">APP</button>
   </div>
-  <div class="chips" id="toolChips" role="group" aria-label="Filter by tool"></div>
   <label class="search">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
     <input id="search" type="search" placeholder="search sections…" aria-label="Search sections" />
@@ -1373,20 +1359,18 @@ Output: one self-contained block, no external dependencies.`,
 (function(){
 const S=window.SECTIONS||[];
 const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const grid=document.getElementById('grid'),empty=document.getElementById('empty'),count=document.getElementById('count'),toolChips=document.getElementById('toolChips'),searchInput=document.getElementById('search');
-const ALL_TOOLS=[...new Set(S.flatMap(s=>s.tools))];
-let state={cat:'all',tools:new Set(),q:''};
+const grid=document.getElementById('grid'),empty=document.getElementById('empty'),count=document.getElementById('count'),searchInput=document.getElementById('search');
+let state={cat:'all',q:''};
 function fitPreview(frame){const iframe=frame.querySelector('iframe');if(!iframe)return;const DW=1200,w=frame.clientWidth;if(!w)return;const scale=w/DW;iframe.style.width=DW+'px';iframe.style.height=Math.round(frame.clientHeight/scale)+'px';iframe.style.transform='scale('+scale+')';iframe.style.transformOrigin='0 0';}
 function fitAll(){document.querySelectorAll('.grid .frame').forEach(fitPreview);}
 let _rz;window.addEventListener('resize',()=>{clearTimeout(_rz);_rz=setTimeout(fitAll,150);});
 const iCopy='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
 const iChk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
 
-ALL_TOOLS.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{state.tools.has(t)?(state.tools.delete(t),b.setAttribute('aria-pressed','false')):(state.tools.add(t),b.setAttribute('aria-pressed','true'));render();});toolChips.appendChild(b);});
 document.querySelectorAll('.seg[aria-label="Filter by surface"] button').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.seg[aria-label="Filter by surface"] button').forEach(b=>b.setAttribute('aria-pressed','false'));btn.setAttribute('aria-pressed','true');state.cat=btn.dataset.cat;render();});});
 searchInput.addEventListener('input',()=>{state.q=searchInput.value.trim().toLowerCase();render();});
 
-function matches(s){if(state.cat!=='all'&&s.category!==state.cat)return false;if(state.tools.size&&![...state.tools].every(t=>s.tools.includes(t)))return false;if(state.q){const h=(s.title+' '+s.type+' '+s.category+' '+s.tools.join(' ')).toLowerCase();if(!h.includes(state.q))return false;}return true;}
+function matches(s){if(state.cat!=='all'&&s.category!==state.cat)return false;if(state.q){const h=(s.title+' '+s.type+' '+s.category+' '+s.tools.join(' ')).toLowerCase();if(!h.includes(state.q))return false;}return true;}
 
 const io=('IntersectionObserver'in window)?new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const c=e.target;c.classList.add('in');const f=c.querySelector('.frame');if(f&&!rm){f.classList.add('scan-run');setTimeout(()=>f.classList.remove('scan-run'),1200);}io.unobserve(c);}});},{threshold:.16,rootMargin:'0px 0px -6% 0px'}):null;
 
