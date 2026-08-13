@@ -44,6 +44,24 @@ Each specimen object:
 description. Write portable, self-contained HTML/CSS (no external dependencies) so the
 preview is provably the copied code. The "verified" promise depends on this.
 
+**Interactive specimens (inline JS is allowed and encouraged).** Previews run scripts:
+the grid thumbnail iframe is `sandbox="allow-scripts allow-same-origin"` (it is
+`pointer-events:none`, visual only) and the modal iframe is `sandbox="allow-scripts"`
+(isolated, opaque origin — so a specimen can never navigate the preview to the host site).
+Two authoring rules keep this working:
+
+- **No backslashes inside a `code`/`prompt` string.** They are JS template literals, so
+  `\n`, `\"`, and regex escapes like `\s` get eaten by the outer literal and corrupt the
+  shipped code. Build strings from the DOM, use `String.fromCharCode(10)` for a newline,
+  and prefer regex-free string ops. (A stray backslash shows up as an "Invalid or
+  unexpected token" pageerror in the preview.)
+- A specimen's own `<script>…</script>` is fine — the build escapes `</script` to
+  `<\/script` only in `index.html`'s inline data block, which still evaluates back to the
+  exact bytes at runtime and on copy. Do not hand-escape it in `data/sections.js`.
+
+Links inside a specimen should use `href="#"` for decorative anchors and real
+`<button type="button">` for actions; never `href=""` or `href="/"`.
+
 ### 2. Design / layout changes are a SEPARATE request
 Only edit `index.html`'s design/layout/CSS/motion/copy when the user explicitly asks for a
 design change **without** the `Add specimen:` keyword. (Adding a specimen may touch the

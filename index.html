@@ -277,7 +277,7 @@ footer.site{padding:36px 0 56px}
       <button class="x" id="closeBtn" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="sbody">
-      <div class="bigframe"><iframe id="bigFrame" title="Section preview" sandbox="allow-same-origin"></iframe></div>
+      <div class="bigframe"><iframe id="bigFrame" title="Section preview" sandbox="allow-scripts allow-modals"></iframe></div>
       <div class="block">
         <div class="bhead">
           <span class="l">// PROMPT — TUNED FOR YOUR AI TOOL</span>
@@ -930,35 +930,79 @@ primary. Output: one self-contained block.`,
     code:
 `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#fff;padding:40px 20px}
+  *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#fff;padding:40px 20px;color:#0f1115}
   .wrap{max-width:680px;margin:0 auto}
+  .sent{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .sent .b{align-self:flex-end;max-width:80%;background:#eef1ff;border:1px solid #dfe4ff;border-radius:14px 14px 4px 14px;padding:9px 12px;font-size:14px;line-height:1.45}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .chip{font-size:12.5px;color:#4b5563;background:#f4f5f7;border:1px solid #eceef1;border-radius:999px;padding:7px 12px;cursor:pointer}
-  .chip:hover{border-color:#d7dbe0}
+  .chip:hover{border-color:#c9ccff;color:#1F45FF}
   .composer{border:1px solid #e2e4e8;border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px -16px rgba(15,17,21,.25)}
-  .ta{font-size:15px;color:#0f1115;min-height:56px;line-height:1.5}
-  .ta .ph{color:#9aa1a9}
-  .bar{display:flex;align-items:center;gap:8px;margin-top:10px}
+  .composer:focus-within{border-color:#c9ccff}
+  textarea{width:100%;border:0;outline:none;resize:none;font:inherit;font-size:15px;color:#0f1115;min-height:56px;line-height:1.5;background:transparent}
+  textarea::placeholder{color:#9aa1a9}
+  .bar{display:flex;align-items:center;gap:8px;margin-top:10px;position:relative}
   .tool{width:34px;height:34px;border-radius:9px;border:1px solid #eceef1;background:#fff;display:flex;align-items:center;justify-content:center;color:#6b7280;cursor:pointer}
   .tool svg{width:17px;height:17px}
-  .model{display:flex;align-items:center;gap:7px;font-size:13px;color:#374151;border:1px solid #eceef1;border-radius:9px;padding:7px 11px;cursor:pointer}
-  .model .dot{width:7px;height:7px;border-radius:50%;background:#4f46e5}
-  .send{margin-left:auto;width:38px;height:38px;border-radius:11px;background:#0f1115;color:#fff;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .model{display:flex;align-items:center;gap:7px;font-size:13px;color:#374151;border:1px solid #eceef1;border-radius:9px;padding:7px 11px;cursor:pointer;user-select:none}
+  .model .dot{width:7px;height:7px;border-radius:50%;background:#1F45FF}
+  .menu{position:absolute;bottom:46px;left:42px;background:#fff;border:1px solid #e2e4e8;border-radius:11px;box-shadow:0 16px 40px -16px rgba(15,17,21,.35);padding:5px;min-width:190px;display:none;z-index:5}
+  .menu.open{display:block}
+  .mi{display:flex;align-items:center;gap:9px;font-size:13px;padding:8px 10px;border-radius:8px;cursor:pointer}
+  .mi:hover{background:#f4f5f7}
+  .mi .dot{width:7px;height:7px;border-radius:50%;background:#1F45FF}
+  .mi .ck{margin-left:auto;color:#1F45FF;opacity:0;width:14px;height:14px}
+  .mi.sel .ck{opacity:1}
+  .send{margin-left:auto;width:38px;height:38px;border-radius:11px;background:#0f1115;color:#fff;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+  .send:disabled{background:#c7cbd2;cursor:default}
   .send svg{width:18px;height:18px}
   .hint{font-size:11.5px;color:#9aa1a9;margin-top:10px;text-align:center}
 </style>
 <div class="wrap">
-  <div class="chips"><span class="chip">Summarize this thread</span><span class="chip">Draft a reply</span><span class="chip">Find action items</span><span class="chip">Explain the diff</span></div>
+  <div class="sent" id="sent"></div>
+  <div class="chips" id="chips"><span class="chip">Summarize this thread</span><span class="chip">Draft a reply</span><span class="chip">Find action items</span><span class="chip">Explain the diff</span></div>
   <div class="composer">
-    <div class="ta"><span class="ph">Ask anything, or describe what you want to build…</span></div>
+    <textarea id="ta" rows="1" placeholder="Ask anything, or describe what you want to build…"></textarea>
     <div class="bar">
       <button class="tool" title="Attach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5 12 21a5 5 0 0 1-7-7l9-9a3.5 3.5 0 1 1 5 5l-9 9a2 2 0 0 1-3-3l8.5-8.5"/></svg></button>
-      <div class="model"><span class="dot"></span>Claude · Sonnet<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
-      <button class="send" title="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11l5-5 5 5M12 6v13"/></svg></button>
+      <div class="model" id="model"><span class="dot"></span><span id="modelName">Claude · Sonnet</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+      <div class="menu" id="menu">
+        <div class="mi" data-m="Claude · Opus"><span class="dot"></span>Claude · Opus<svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="mi sel" data-m="Claude · Sonnet"><span class="dot"></span>Claude · Sonnet<svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="mi" data-m="Claude · Haiku"><span class="dot"></span>Claude · Haiku<svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      </div>
+      <button class="send" id="send" title="Send" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11l5-5 5 5M12 6v13"/></svg></button>
     </div>
   </div>
   <div class="hint">AI can make mistakes. Double-check important info.</div>
-</div>`
+</div>
+<script>
+(function(){
+  var ta=document.getElementById("ta"),send=document.getElementById("send"),sent=document.getElementById("sent");
+  var model=document.getElementById("model"),menu=document.getElementById("menu"),modelName=document.getElementById("modelName");
+  function sync(){send.disabled=ta.value.trim()==="";ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,160)+"px";}
+  ta.addEventListener("input",sync);
+  document.getElementById("chips").addEventListener("click",function(e){
+    var c=e.target.closest(".chip");if(!c)return;
+    ta.value=(ta.value?ta.value+" ":"")+c.textContent;ta.focus();sync();
+  });
+  function submit(){
+    var v=ta.value.trim();if(!v)return;
+    var b=document.createElement("div");b.className="b";b.textContent=v;sent.appendChild(b);
+    ta.value="";sync();ta.focus();
+  }
+  send.addEventListener("click",submit);
+  ta.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();submit();}});
+  model.addEventListener("click",function(e){e.stopPropagation();menu.classList.toggle("open");});
+  menu.addEventListener("click",function(e){
+    var mi=e.target.closest(".mi");if(!mi)return;
+    modelName.textContent=mi.getAttribute("data-m");
+    for(var i=0;i<menu.children.length;i++)menu.children[i].classList.remove("sel");
+    mi.classList.add("sel");menu.classList.remove("open");
+  });
+  document.addEventListener("click",function(){menu.classList.remove("open");});
+})();
+<\/script>`
   },
 
   {
@@ -1886,6 +1930,375 @@ Output: one self-contained block, no external dependencies.`,
     <div class="body"><h3>A practical guide to event schema design</h3><p class="ex">Name events for the question you will ask later, not the click you saw today.</p><div class="foot"><span class="av">RK</span><span class="who">Ravi Kumar</span><span class="dot"></span><span>Jul 19</span><span class="rt">11 min</span></div></div>
   </div>
 </div>`
+  },
+  {
+    id:"app-approval", title:"Agent Approval", category:"App", type:"Approval",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: designer for an AI agent product.
+Build an AGENT APPROVAL card: the agent proposes a code edit and the human must
+approve, edit, or reject it before it runs (a permission / edit-first pattern).
+
+Layout:
+- Header: agent avatar + "Assistant proposes an edit · review before it runs"
+- A file path label (monospace)
+- A real diff: context lines neutral, removed lines on a red tint with a minus gutter, added lines on a green tint with a plus gutter
+- Footer: a status line on the left ("Waiting for your review"), then Reject / Edit / Approve & run buttons
+
+Make it FUNCTIONAL:
+- Edit toggles an editable textarea pre-filled with the proposed code; the button becomes "Done"
+- Approve resolves to an "Approved — change applied" state and hides the buttons
+- Reject resolves to a "Rejected — nothing was run" state
+- Approving after editing keeps the edited version (the confirmation reflects the edit, not the stale draft)
+
+Style: neutral palette, one accent (#1F45FF), green for additions, red for removals; monospace for code; 1px hairlines, 14px radius. No emoji.
+Output: one self-contained block with inline JS, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#0f1115;background:#f6f7f9;padding:28px 24px}
+  .card{max-width:600px;margin:0 auto;background:#fff;border:1px solid #e6e8eb;border-radius:14px;overflow:hidden}
+  .head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #e6e8eb}
+  .bot{width:26px;height:26px;border-radius:7px;background:#1F45FF;flex:none}
+  .head .t{font-size:14px;font-weight:600}
+  .head .t span{color:#6b7280;font-weight:400}
+  .file{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#6b7280;background:#f4f5f7;border-bottom:1px solid #e6e8eb;padding:8px 16px}
+  .diff{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.75;padding:10px 0}
+  .ln{display:flex;padding:0 16px;white-space:pre-wrap}
+  .ln .g{width:20px;color:#9aa1a9;flex:none;user-select:none}
+  .ln.del{background:#fdeceb}
+  .ln.del .g{color:#d5342b}
+  .ln.add{background:#e7f6ec}
+  .ln.add .g{color:#177a3d}
+  .edit{display:none;padding:12px 16px}
+  .edit textarea{width:100%;min-height:118px;border:1px solid #e6e8eb;border-radius:9px;padding:10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;color:#0f1115;resize:vertical;outline:none}
+  .edit textarea:focus{border-color:#1F45FF}
+  .foot{display:flex;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid #e6e8eb}
+  .status{font-size:13px;color:#6b7280;margin-right:auto;display:flex;align-items:center;gap:7px}
+  .status svg{width:15px;height:15px;flex:none}
+  .btn{font-size:13px;font-weight:600;border-radius:9px;padding:9px 14px;cursor:pointer;border:1px solid #e6e8eb;background:#fff;color:#0f1115}
+  .btn:hover{border-color:#c7cbd2}
+  .btn.approve{background:#177a3d;border-color:#177a3d;color:#fff}
+  .btn.reject{color:#d5342b}
+  .done .btn{display:none}
+  .done .status{color:#0f1115;font-weight:600}
+</style>
+<div class="card" id="card">
+  <div class="head"><span class="bot"></span><div class="t">Assistant proposes an edit <span>· review before it runs</span></div></div>
+  <div class="file">src/save.js</div>
+  <div class="diff" id="diff">
+    <div class="ln"><span class="g"> </span>async function save(draft){</div>
+    <div class="ln del"><span class="g">-</span>  await db.write(draft);</div>
+    <div class="ln del"><span class="g">-</span>  toast("Saved");</div>
+    <div class="ln add"><span class="g">+</span>  const res = await db.write(draft);</div>
+    <div class="ln add"><span class="g">+</span>  if (res.ok) toast("Saved");</div>
+    <div class="ln add"><span class="g">+</span>  else toast("Save failed", "error");</div>
+    <div class="ln"><span class="g"> </span>}</div>
+  </div>
+  <div class="edit" id="edit"><textarea id="ta" spellcheck="false"></textarea></div>
+  <div class="foot">
+    <span class="status" id="status"><svg viewBox="0 0 24 24" fill="none" stroke="#9aa1a9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Waiting for your review</span></span>
+    <button class="btn reject" id="reject">Reject</button>
+    <button class="btn" id="editBtn">Edit</button>
+    <button class="btn approve" id="approve">Approve &amp; run</button>
+  </div>
+</div>
+<script>
+(function(){
+  var card=document.getElementById("card"),diff=document.getElementById("diff"),edit=document.getElementById("edit"),ta=document.getElementById("ta"),status=document.getElementById("status"),editBtn=document.getElementById("editBtn");
+  var editing=false;
+  function getAdds(){var out=[],nodes=document.querySelectorAll(".ln.add");for(var i=0;i<nodes.length;i++){var t=nodes[i].textContent;if(t.charAt(0)==="+")t=t.slice(1);while(t.charAt(0)===" ")t=t.slice(1);out.push(t);}return out.join(String.fromCharCode(10));}
+  var proposed=getAdds(),original=proposed;
+  editBtn.addEventListener("click",function(){
+    editing=!editing;
+    if(editing){ta.value=proposed;diff.style.display="none";edit.style.display="block";editBtn.textContent="Done";ta.focus();}
+    else{proposed=ta.value;diff.style.display="";edit.style.display="none";editBtn.textContent="Edit";}
+  });
+  var check='<svg viewBox="0 0 24 24" fill="none" stroke="#177a3d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  var xmark='<svg viewBox="0 0 24 24" fill="none" stroke="#d5342b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  function finish(icon,txt,color){card.classList.add("done");status.innerHTML=icon+"<span>"+txt+"</span>";status.style.color=color;}
+  document.getElementById("approve").addEventListener("click",function(){
+    if(editing)proposed=ta.value;
+    var edited=(proposed!==original)?" (edited)":"";
+    finish(check,"Approved — change applied"+edited,"#177a3d");
+  });
+  document.getElementById("reject").addEventListener("click",function(){finish(xmark,"Rejected — nothing was run","#d5342b");});
+})();
+<\/script>`
+  },
+  {
+    id:"app-answer", title:"AI Answer + Sources", category:"App", type:"AI answer",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: designer for an AI answers product.
+Build an AI ANSWER card with reasoning disclosure and inline citations.
+
+Layout:
+- Role line: assistant avatar + "answered in 4s"
+- A collapsible "Thought for 4s" disclosure (closed by default) that expands to a short reasoning summary
+- The answer text with inline citation chips ([1], [2]) after the claims they support
+- A "Sources" list below (numbered), each with a title and a domain
+- A small toolbar: Copy, Helpful
+
+Make it FUNCTIONAL:
+- The reasoning disclosure expands/collapses on click
+- Clicking a citation chip highlights and scrolls to its matching source
+- Copy copies the answer text and briefly shows "Copied"
+
+Style: neutral palette, one accent (#1F45FF); citation chips are small accent pills; 1px hairlines, 14px radius. No emoji.
+Output: one self-contained block with inline JS, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#0f1115;background:#f6f7f9;padding:28px 24px}
+  .card{max-width:620px;margin:0 auto;background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:20px}
+  .role{display:flex;align-items:center;gap:9px;font-size:13px;color:#6b7280;margin-bottom:12px}
+  .role .av{width:24px;height:24px;border-radius:7px;background:#1F45FF}
+  details{border:1px solid #e6e8eb;border-radius:10px;margin-bottom:14px;overflow:hidden}
+  summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:12.5px;color:#6b7280;background:#f7f8fa}
+  summary::-webkit-details-marker{display:none}
+  .chev{transition:transform .2s}
+  details[open] .chev{transform:rotate(90deg)}
+  .think{padding:12px;font-size:12.5px;color:#4b5563;line-height:1.6;border-top:1px solid #e6e8eb}
+  .answer{font-size:15px;line-height:1.7}
+  .answer p{margin:0 0 12px}
+  .cite{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;font-size:10.5px;font-weight:700;color:#1F45FF;background:#eef1ff;border:1px solid #dfe4ff;border-radius:5px;cursor:pointer;vertical-align:top;margin:0 1px;text-decoration:none}
+  .cite:hover{background:#1F45FF;color:#fff}
+  .sources{margin-top:16px;border-top:1px solid #eceef1;padding-top:14px}
+  .sources h4{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9aa1a9;margin:0 0 10px}
+  .src{display:flex;gap:10px;padding:9px 10px;border:1px solid #e6e8eb;border-radius:9px;margin-bottom:8px;transition:border-color .2s,background .2s}
+  .src.hi{border-color:#1F45FF;background:#f5f7ff}
+  .src .n{font-size:11px;font-weight:700;color:#6b7280;flex:none;width:16px}
+  .src .st{font-size:13px;font-weight:600}
+  .src .u{font-size:12px;color:#6b7280}
+  .tools{display:flex;gap:8px;margin-top:14px}
+  .b{font-size:12.5px;font-weight:600;border:1px solid #e6e8eb;border-radius:8px;padding:7px 12px;background:#fff;color:#0f1115;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .b:hover{border-color:#c7cbd2}
+  .b svg{width:14px;height:14px}
+</style>
+<div class="card">
+  <div class="role"><span class="av"></span>Assistant · answered in 4s</div>
+  <details>
+    <summary><svg class="chev" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>Thought for 4s · 3 steps</summary>
+    <div class="think">Checked the pricing page for current Pro limits, confirmed the overage rate in the billing doc, then cross-checked the plan guide to make sure the recommendation still holds this quarter.</div>
+  </details>
+  <div class="answer">
+    <p>The Pro plan includes <b>2M events per month</b><a class="cite" data-s="1" href="#">1</a>. Past that you are billed <b>$0.50 per extra 10k events</b><a class="cite" data-s="2" href="#">2</a>, and unused volume does not roll over<a class="cite" data-s="1" href="#">1</a>.</p>
+    <p>For teams regularly above ~3M events, Scale is cheaper than Pro-plus-overage<a class="cite" data-s="3" href="#">3</a>.</p>
+  </div>
+  <div class="sources">
+    <h4>Sources</h4>
+    <div class="src" data-s="1"><span class="n">1</span><div><div class="st">Pricing — Plan limits</div><div class="u">northwind.io/pricing</div></div></div>
+    <div class="src" data-s="2"><span class="n">2</span><div><div class="st">Billing — Overage rates</div><div class="u">docs.northwind.io/billing</div></div></div>
+    <div class="src" data-s="3"><span class="n">3</span><div><div class="st">Guide — Choosing a plan</div><div class="u">docs.northwind.io/plans</div></div></div>
+  </div>
+  <div class="tools">
+    <button class="b" id="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg><span>Copy</span></button>
+    <button class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11M2 13v6M14 4l-1 6h6a2 2 0 0 1 2 2l-1 6a2 2 0 0 1-2 2H7"/></svg>Helpful</button>
+  </div>
+</div>
+<script>
+(function(){
+  var srcs={};[].forEach.call(document.querySelectorAll(".src"),function(s){srcs[s.getAttribute("data-s")]=s;});
+  [].forEach.call(document.querySelectorAll(".cite"),function(c){
+    c.addEventListener("click",function(e){
+      e.preventDefault();
+      [].forEach.call(document.querySelectorAll(".src"),function(s){s.classList.remove("hi");});
+      var el=srcs[c.getAttribute("data-s")];el.classList.add("hi");el.scrollIntoView({block:"nearest",behavior:"smooth"});
+    });
+  });
+  var copy=document.getElementById("copy"),lab=copy.querySelector("span");
+  copy.addEventListener("click",function(){
+    var t=document.querySelector(".answer").innerText;
+    try{if(navigator.clipboard)navigator.clipboard.writeText(t);}catch(e){}
+    lab.textContent="Copied";setTimeout(function(){lab.textContent="Copy";},1200);
+  });
+})();
+<\/script>`
+  },
+  {
+    id:"app-chart", title:"Analytics Chart", category:"App", type:"Chart",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: dashboard designer + front-end engineer.
+Build an ANALYTICS CHART card with a working range toggle.
+
+Layout:
+- Top row: a metric label + big value with a green change badge on the left; a 7D / 30D / 90D segmented toggle on the right
+- An area line chart drawn in SVG (line + soft gradient fill), with faint horizontal gridlines
+
+Make it FUNCTIONAL:
+- The SVG line + area are generated from data in JS
+- Clicking 7D / 30D / 90D swaps the dataset, updates the big value and change, and smoothly morphs the chart path
+
+Style: neutral palette, one accent (#1F45FF); tabular figures; 1px hairlines, 14px radius. No emoji.
+Output: one self-contained block with inline JS + inline SVG, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#0f1115;background:#f6f7f9;padding:28px 24px}
+  .card{max-width:600px;margin:0 auto;background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:20px}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .k{font-size:13px;color:#6b7280}
+  .val{font-size:30px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px}
+  .val .chg{font-size:13px;font-weight:700;color:#177a3d;margin-left:8px}
+  .seg{display:inline-flex;border:1px solid #e6e8eb;border-radius:9px;overflow:hidden;flex:none}
+  .seg button{font-size:12px;font-weight:600;color:#6b7280;background:#fff;border:0;border-left:1px solid #e6e8eb;padding:7px 12px;cursor:pointer}
+  .seg button:first-child{border-left:0}
+  .seg button.on{background:#1F45FF;color:#fff}
+  .chart{margin-top:16px}
+  svg{display:block;width:100%;height:200px;overflow:visible}
+  .line{fill:none;stroke:#1F45FF;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:d .5s ease}
+  .area{fill:url(#grad);transition:d .5s ease}
+  .grid line{stroke:#eef0f2;stroke-width:1}
+</style>
+<div class="card">
+  <div class="top">
+    <div><div class="k">Events ingested</div><div class="val" id="val">1.94M<span class="chg" id="chg">+12%</span></div></div>
+    <div class="seg" id="seg"><button data-r="7" class="on">7D</button><button data-r="30">30D</button><button data-r="90">90D</button></div>
+  </div>
+  <div class="chart">
+    <svg viewBox="0 0 560 200" preserveAspectRatio="none">
+      <defs><linearGradient id="grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1F45FF" stop-opacity="0.18"/><stop offset="1" stop-color="#1F45FF" stop-opacity="0"/></linearGradient></defs>
+      <g class="grid"><line x1="0" y1="50" x2="560" y2="50"/><line x1="0" y1="100" x2="560" y2="100"/><line x1="0" y1="150" x2="560" y2="150"/></g>
+      <path class="area" id="area" d="M0 200"></path>
+      <path class="line" id="line" d="M0 200"></path>
+    </svg>
+  </div>
+</div>
+<script>
+(function(){
+  var W=560,H=200,PAD=12;
+  var data={
+    "7":{pts:[40,52,48,66,60,80,92],val:"1.94M",chg:"+12%"},
+    "30":{pts:[30,34,33,42,40,54,50,62,58,71,66,80,74,90],val:"7.8M",chg:"+9%"},
+    "90":{pts:[18,25,24,31,28,37,34,45,42,53,50,61,58,69,66,78,74,86,82,94],val:"22.4M",chg:"+27%"}
+  };
+  function build(pts){
+    var max=Math.max.apply(null,pts),min=Math.min.apply(null,pts),n=pts.length;
+    var x=function(i){return PAD+(W-2*PAD)*i/(n-1);};
+    var y=function(v){return H-PAD-(H-2*PAD)*(v-min)/((max-min)||1);};
+    var d="M"+x(0).toFixed(1)+" "+y(pts[0]).toFixed(1);
+    for(var i=1;i<n;i++)d+=" L"+x(i).toFixed(1)+" "+y(pts[i]).toFixed(1);
+    return {line:d,area:d+" L"+x(n-1).toFixed(1)+" "+H+" L"+x(0).toFixed(1)+" "+H+" Z"};
+  }
+  var line=document.getElementById("line"),area=document.getElementById("area"),val=document.getElementById("val"),chg=document.getElementById("chg"),seg=document.getElementById("seg");
+  function render(r){var dd=data[r],b=build(dd.pts);line.setAttribute("d",b.line);area.setAttribute("d",b.area);val.childNodes[0].nodeValue=dd.val;chg.textContent=dd.chg;}
+  seg.addEventListener("click",function(e){
+    var btn=e.target.closest("button");if(!btn)return;
+    for(var i=0;i<seg.children.length;i++)seg.children[i].classList.remove("on");
+    btn.classList.add("on");render(btn.getAttribute("data-r"));
+  });
+  render("7");
+})();
+<\/script>`
+  },
+  {
+    id:"web-counters", title:"Animated Stats", category:"Web", type:"Counters",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: marketing site designer + front-end engineer.
+Build an ANIMATED STATS row: four KPI tiles whose numbers count up on load.
+
+Layout:
+- Four bordered tiles in a row (2x2 on narrow). Each: a muted label, a large number with a unit/suffix, and a thin progress bar beneath
+
+Make it FUNCTIONAL:
+- On load, each number animates from 0 to its target with an ease-out, respecting decimals and thousands separators
+- Each progress bar animates its width in at the same time
+
+Style: neutral palette, one accent (#1F45FF); tabular figures; 1px hairlines, 14px radius. No emoji. Honor prefers-reduced-motion by jumping to the final values.
+Output: one self-contained block with inline JS, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#0f1115;background:#fff;padding:48px 24px}
+  .wrap{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .stat{border:1px solid #e6e8eb;border-radius:14px;padding:18px}
+  .k{font-size:12.5px;color:#6b7280}
+  .n{font-size:34px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 12px}
+  .n .u{color:#1F45FF}
+  .track{height:6px;border-radius:3px;background:#eef0f2;overflow:hidden}
+  .fill{height:100%;background:#1F45FF;border-radius:3px;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+  @media(max-width:720px){.wrap{grid-template-columns:repeat(2,1fr)}}
+</style>
+<div class="wrap">
+  <div class="stat"><div class="k">Uptime</div><div class="n"><span class="c" data-to="99.98" data-dec="2">0</span><span class="u">%</span></div><div class="track"><div class="fill" data-w="99"></div></div></div>
+  <div class="stat"><div class="k">Teams onboarded</div><div class="n"><span class="c" data-to="12400">0</span></div><div class="track"><div class="fill" data-w="78"></div></div></div>
+  <div class="stat"><div class="k">Median query</div><div class="n"><span class="c" data-to="340">0</span><span class="u">ms</span></div><div class="track"><div class="fill" data-w="60"></div></div></div>
+  <div class="stat"><div class="k">Review score</div><div class="n"><span class="c" data-to="4.9" data-dec="1">0</span><span class="u">/5</span></div><div class="track"><div class="fill" data-w="98"></div></div></div>
+</div>
+<script>
+(function(){
+  var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function fmt(v,dec){if(dec)return v.toFixed(dec);if(v>=1000)return Math.round(v).toLocaleString();return String(Math.round(v));}
+  [].forEach.call(document.querySelectorAll(".c"),function(el){
+    var to=parseFloat(el.getAttribute("data-to")),dec=parseInt(el.getAttribute("data-dec")||"0",10);
+    if(reduce){el.textContent=fmt(to,dec);return;}
+    var start=null,dur=1100;
+    function step(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1),e=1-Math.pow(1-p,3);el.textContent=fmt(to*e,dec);if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+  });
+  requestAnimationFrame(function(){[].forEach.call(document.querySelectorAll(".fill"),function(f){f.style.width=(reduce?f.getAttribute("data-w"):f.getAttribute("data-w"))+"%";});});
+})();
+<\/script>`
+  },
+  {
+    id:"web-marquee", title:"Testimonial Marquee", category:"Web", type:"Marquee",
+    tools:["v0","Cursor","Claude","HTML"],
+    prompt:
+`Role: marketing site designer + front-end engineer.
+Build a TESTIMONIAL MARQUEE: a horizontal row of quote cards that scrolls
+continuously and seamlessly, pausing on hover.
+
+Layout:
+- Centered eyebrow + short heading
+- A masked viewport (fade at both edges) containing a track of quote cards that scrolls left forever
+- Each card: a short quote, then a small avatar (initials), name, and role
+
+Make it FUNCTIONAL:
+- The track is duplicated so the loop is seamless (CSS animation translating to -50%)
+- Hovering the row pauses the scroll
+
+Style: neutral palette, one accent (#1F45FF) for the avatars; 1px hairlines, 14px radius. No emoji. Respect prefers-reduced-motion (no auto-scroll).
+Output: one self-contained block with inline JS, no external dependencies.`,
+    code:
+`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#0f1115;background:#fff;padding:40px 0}
+  .head{max-width:1040px;margin:0 auto 22px;padding:0 24px;text-align:center}
+  .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#1F45FF;font-weight:700}
+  h2{font-size:26px;letter-spacing:-.02em;margin:8px 0 0}
+  .viewport{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .marq{display:flex;gap:16px;width:max-content;padding:4px 16px;animation:scroll 30s linear infinite}
+  .viewport:hover .marq{animation-play-state:paused}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+  .q{width:320px;flex:none;border:1px solid #e6e8eb;border-radius:14px;padding:18px;background:#fff}
+  .q p{margin:0 0 14px;font-size:14px;line-height:1.55}
+  .who{display:flex;align-items:center;gap:10px}
+  .av{width:32px;height:32px;border-radius:50%;background:#eef1ff;color:#1F45FF;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+  .nm{font-size:13px;font-weight:600}
+  .rl{font-size:12px;color:#6b7280}
+  @media(prefers-reduced-motion:reduce){.marq{animation:none}}
+</style>
+<div class="head"><div class="eyebrow">Loved by teams</div><h2>What builders say</h2></div>
+<div class="viewport"><div class="marq" id="marq"></div></div>
+<script>
+(function(){
+  var quotes=[
+    ["The preview is the code. That one guarantee changed how much we trust a reference.","Mara Adeyemi","Design lead, Northwind"],
+    ["We shipped a pricing page in an afternoon starting from a verified section.","Sam Lorne","Founder, Vertex"],
+    ["Finally a library where I copy and it just works — no cleanup pass.","Jess Park","Engineer, Lumen"],
+    ["The prompts are a genuinely good starting point for our stack.","Ravi Kumar","PM, Halcyon"],
+    ["Reads like a real design artifact, not a parts bin. Bookmarked.","Elin Norberg","Designer, Cedar"]
+  ];
+  function initials(name){var p=name.split(" ");return ((p[0]||"")[0]||"")+((p[1]||"")[0]||"");}
+  function card(q){return '<div class="q"><p>&ldquo;'+q[0]+'&rdquo;</p><div class="who"><span class="av">'+initials(q[1])+'</span><div><div class="nm">'+q[1]+'</div><div class="rl">'+q[2]+'</div></div></div></div>';}
+  var html=quotes.map(card).join("");
+  document.getElementById("marq").innerHTML=html+html;
+})();
+<\/script>`
   }
 ];
 
@@ -1921,7 +2334,7 @@ function render(){
         <span class="fnum mono">${n}</span>
         <div class="scan"></div>
         <span class="openhint mono">open ↗</span>
-        <iframe title="${s.title} preview" sandbox="allow-same-origin"></iframe>
+        <iframe title="${s.title} preview" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
       <div class="meta">
         <div class="spec"><span class="cat">${s.category.toUpperCase()}</span><span class="dot"></span>${s.type}<span class="dot"></span><span class="vf">${iChk} verified</span></div>
