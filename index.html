@@ -144,8 +144,21 @@ a{color:inherit;text-decoration:none}
 .x:hover{color:var(--ink);border-color:var(--ink)}
 .x svg{width:16px;height:16px}
 .sbody{padding:20px 22px 24px;display:flex;flex-direction:column;gap:18px}
-.bigframe{background:#fff;border:1px solid var(--line2);overflow:hidden;height:430px}
-.bigframe iframe{border:0;width:100%;height:100%;background:#fff}
+/* preview inspector — resize + theme, like a live workbench */
+.stage{border:1px solid var(--line2)}
+.stagebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--line2);background:var(--panel)}
+.seg2{display:inline-flex;border:1px solid var(--line2);background:var(--paper)}
+.seg2 button{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--grey);cursor:pointer;background:transparent;border:0;border-right:1px solid var(--line2);padding:7px 12px;transition:background .15s,color .15s;display:inline-flex;align-items:center;gap:6px}
+.seg2 button:last-child{border-right:0}
+.seg2 button svg{width:13px;height:13px}
+.seg2 button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.vpw{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--grey);letter-spacing:.04em}
+.canvas{padding:18px;display:flex;justify-content:center;align-items:flex-start;overflow:auto;height:430px;transition:background .2s}
+.canvas[data-t="light"]{background:#eeeeea}
+.canvas[data-t="dark"]{background:#0b0c12}
+.bigframe{width:100%;max-width:100%;height:100%;background:#fff;border:1px solid var(--line2);overflow:hidden;flex:none;transition:max-width .35s cubic-bezier(.2,.8,.2,1)}
+.canvas[data-t="dark"] .bigframe{border-color:#23252b;box-shadow:0 20px 50px -24px rgba(0,0,0,.7)}
+.bigframe iframe{border:0;width:100%;height:100%;background:#fff;display:block}
 .block{border:1px solid var(--line2)}
 .bhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:var(--panel);border-bottom:1px solid var(--line2)}
 .bhead .l{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--grey);display:flex;align-items:center;gap:8px}
@@ -174,7 +187,7 @@ footer.site{padding:36px 0 56px}
 .caret{animation:blink 1.05s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}.card{opacity:1!important;transform:none!important}.caret{opacity:1!important}}
-@media(max-width:640px){.wrap{padding:0 18px}.search{margin-left:0;max-width:none;order:5;width:100%}.metaTR{display:none}.bigframe{height:340px}}
+@media(max-width:640px){.wrap{padding:0 18px}.search{margin-left:0;max-width:none;order:5;width:100%}.metaTR{display:none}.canvas{height:360px;padding:12px}}
 
 /* hero — single column, restrained; the library does the visual work */
 .hero{display:block}
@@ -277,7 +290,23 @@ footer.site{padding:36px 0 56px}
       <button class="x" id="closeBtn" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="sbody">
-      <div class="bigframe"><iframe id="bigFrame" title="Section preview" sandbox="allow-scripts allow-modals"></iframe></div>
+      <div class="stage">
+        <div class="stagebar">
+          <div class="seg2" id="vpSeg" role="group" aria-label="Preview width">
+            <button type="button" data-w="0" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M8 21h8"/></svg>Desktop</button>
+            <button type="button" data-w="768" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="5" y="3" width="14" height="18" rx="2"/></svg>Tablet</button>
+            <button type="button" data-w="390" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>Mobile</button>
+          </div>
+          <div class="seg2" id="themeSeg" role="group" aria-label="Preview theme">
+            <button type="button" data-t="light" aria-pressed="true">Light</button>
+            <button type="button" data-t="dark" aria-pressed="false">Dark</button>
+          </div>
+          <span class="vpw" id="vpw"></span>
+        </div>
+        <div class="canvas" id="canvas" data-t="light">
+          <div class="bigframe" id="frameHolder"><iframe id="bigFrame" title="Section preview" sandbox="allow-scripts allow-modals"></iframe></div>
+        </div>
+      </div>
       <div class="block">
         <div class="bhead">
           <span class="l">// PROMPT — TUNED FOR YOUR AI TOOL</span>
@@ -292,7 +321,7 @@ footer.site{padding:36px 0 56px}
         </div>
         <pre><code id="codeText"></code></pre>
       </div>
-      <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Verified render.</b> The preview above is generated from the code below — nothing staged. The prompt is your fast path to the same section in your own framework and AI tool.</span></div>
+      <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Verified render.</b> The preview above is generated from the code below — nothing staged. Resize and theme are inspection aids; the code you copy is unchanged. The prompt is your fast path to the same section in your own framework and AI tool.</span></div>
     </div>
   </div>
 </div>
@@ -2717,7 +2746,16 @@ function toast(m){toastMsg.textContent=m;toastEl.classList.add('show');clearTime
 
 const scrim=document.getElementById('scrim'),sheet=document.getElementById('sheet'),sheetTitle=document.getElementById('sheetTitle'),sheetSpec=document.getElementById('sheetSpec'),bigFrame=document.getElementById('bigFrame'),promptText=document.getElementById('promptText'),codeText=document.getElementById('codeText');
 let cur=null,lastTrigger=null;
-function openSheet(id,trigger){const s=S.find(x=>x.id===id);if(!s)return;cur=id;lastTrigger=trigger||document.activeElement;sheetTitle.textContent=s.title;sheetSpec.innerHTML=`<span class="cat">${s.category.toUpperCase()}</span><span class="dot"></span>${s.type}<span class="dot"></span><span class="vf">${iChk} verified</span>`;bigFrame.srcdoc=s.code;promptText.textContent=s.prompt;codeText.textContent=s.code;scrim.hidden=false;requestAnimationFrame(()=>scrim.classList.add('open'));document.body.style.overflow='hidden';document.getElementById('closeBtn').focus();}
+/* ---- preview inspector: viewport resize + theme (like a live workbench) ---- */
+const vpSeg=document.getElementById('vpSeg'),themeSeg=document.getElementById('themeSeg'),canvasEl=document.getElementById('canvas'),frameHolder=document.getElementById('frameHolder'),vpwEl=document.getElementById('vpw');
+let vpMode=0,themeMode='light';
+function showVpW(){const w=vpMode||Math.round(frameHolder.getBoundingClientRect().width);vpwEl.textContent=w?w+' px':'';}
+function applyVp(){frameHolder.style.maxWidth=vpMode?vpMode+'px':'100%';requestAnimationFrame(showVpW);}
+function renderPreview(){const s=S.find(x=>x.id===cur);if(!s)return;bigFrame.srcdoc=themeMode==='dark'?'<script>document.documentElement.setAttribute("data-theme","dark");document.documentElement.style.colorScheme="dark";<\/script>'+s.code:s.code;}
+vpSeg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...vpSeg.children].forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');vpMode=parseInt(b.dataset.w,10)||0;applyVp();});
+themeSeg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...themeSeg.children].forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');themeMode=b.dataset.t;canvasEl.setAttribute('data-t',themeMode);renderPreview();});
+window.addEventListener('resize',()=>{if(!scrim.hidden)showVpW();});
+function openSheet(id,trigger){const s=S.find(x=>x.id===id);if(!s)return;cur=id;lastTrigger=trigger||document.activeElement;sheetTitle.textContent=s.title;sheetSpec.innerHTML=`<span class="cat">${s.category.toUpperCase()}</span><span class="dot"></span>${s.type}<span class="dot"></span><span class="vf">${iChk} verified</span>`;promptText.textContent=s.prompt;codeText.textContent=s.code;vpMode=0;themeMode='light';[...vpSeg.children].forEach((x,i)=>x.setAttribute('aria-pressed',i===0?'true':'false'));[...themeSeg.children].forEach((x,i)=>x.setAttribute('aria-pressed',i===0?'true':'false'));canvasEl.setAttribute('data-t','light');frameHolder.style.maxWidth='100%';renderPreview();scrim.hidden=false;requestAnimationFrame(()=>{scrim.classList.add('open');showVpW();});document.body.style.overflow='hidden';document.getElementById('closeBtn').focus();}
 function closeSheet(){scrim.classList.remove('open');document.body.style.overflow='';setTimeout(()=>{scrim.hidden=true;bigFrame.srcdoc='';},200);if(lastTrigger){try{lastTrigger.focus();}catch(e){}}}
 scrim.addEventListener('keydown',e=>{if(e.key!=='Tab'||scrim.hidden)return;const list=[...sheet.querySelectorAll('button,[href],input,[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled&&el.offsetParent!==null);if(!list.length)return;const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
 document.getElementById('closeBtn').addEventListener('click',closeSheet);
