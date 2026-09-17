@@ -89,6 +89,7 @@ a{color:inherit;text-decoration:none}
 .card:hover{border-color:var(--line2);box-shadow:0 24px 54px -30px rgba(15,17,21,.4);transform:translateY(-3px)}
 .frame{position:relative;background:#fff;border-bottom:1px solid var(--line);height:276px;overflow:hidden;cursor:pointer;transform-style:preserve-3d;will-change:transform}
 .frame iframe{border:0;width:100%;height:100%;display:block;background:#fff;pointer-events:none}
+.card:hover .frame iframe,.card:focus-within .frame iframe{pointer-events:auto}
 .idn{margin-left:auto;color:var(--faint);letter-spacing:.06em}
 .fidx{position:absolute;top:0;left:0;z-index:3;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:#111;background:rgba(255,255,255,.86);border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:4px 8px}
 .fnum{position:absolute;top:0;right:0;z-index:3;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:#111;background:rgba(255,255,255,.86);border-left:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:4px 8px}
@@ -97,13 +98,21 @@ a{color:inherit;text-decoration:none}
 @keyframes sweep{0%{opacity:0;transform:translateY(0)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateY(238px)}}
 .openhint{position:absolute;bottom:0;right:0;z-index:4;font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:#111;background:rgba(255,255,255,.86);border-left:1px solid var(--line2);border-top:1px solid var(--line2);padding:4px 8px;opacity:0;transition:opacity .18s}
 .frame:hover .openhint{opacity:1}
-.meta{padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px}
+.meta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 13px 13px 16px}
+.openbtn{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:transparent;border:0;padding:0;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.vtick{flex:none;color:var(--cobalt);display:inline-flex}
+.vtick svg{width:13px;height:13px}
+.ctl{display:flex;gap:4px;flex:none;opacity:.5;transition:opacity .18s}
+.card:hover .ctl,.card:focus-within .ctl{opacity:1}
+.cbtn{width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--grey);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:color .15s,background .15s,border-color .15s}
+.cbtn:hover{color:var(--ink);background:var(--paper);border-color:var(--line2)}
+.cbtn svg{width:15px;height:15px}
 .spec{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--grey);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .spec .cat{color:var(--ink);font-weight:700}
 .spec .dot{width:3px;height:3px;background:var(--line2)}
 .spec .vf{color:var(--cobalt);font-weight:700;display:inline-flex;align-items:center;gap:5px}
 .spec .vf svg{width:12px;height:12px}
-.card h3{font-family:var(--arch);font-weight:700;font-size:21px;letter-spacing:-.02em;margin:0;line-height:1.05}
+.card h3{font-family:var(--arch);font-weight:700;font-size:16.5px;letter-spacing:-.015em;margin:0;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
 .tag{font-family:var(--mono);font-size:10px;color:var(--grey);border:1px solid var(--line2);padding:3px 7px}
 .acts{display:flex;gap:8px;margin-top:2px}
@@ -2642,6 +2651,9 @@ function fitAll(){document.querySelectorAll('.grid .frame').forEach(fitPreview);
 let _rz;window.addEventListener('resize',()=>{clearTimeout(_rz);_rz=setTimeout(fitAll,150);});
 const iCopy='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
 const iChk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+const iReplay='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 3.5v6h-6"/></svg>';
+const iExpand='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7"/></svg>';
+const PFX='<style>html,body{overflow:hidden!important}::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}</style>';
 
 document.querySelectorAll('.seg[aria-label="Filter by surface"] button').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.seg[aria-label="Filter by surface"] button').forEach(b=>b.setAttribute('aria-pressed','false'));btn.setAttribute('aria-pressed','true');state.cat=btn.dataset.cat;render();});});
 searchInput.addEventListener('input',()=>{state.q=searchInput.value.trim().toLowerCase();render();});
@@ -2657,28 +2669,28 @@ function render(){
     const n=String(S.indexOf(s)+1).padStart(3,'0');
     const card=document.createElement('article');card.className='card';
     card.innerHTML=`
-      <div class="frame" data-open="${s.id}" role="button" tabindex="0" aria-label="Open ${s.title} details">
+      <div class="frame">
         <div class="scan"></div>
-        <span class="openhint mono">open ↗</span>
         <iframe title="${s.title} preview" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
       <div class="meta">
-        <div class="spec"><span class="cat">${s.category.toUpperCase()}</span><span class="dot"></span>${s.type}<span class="dot"></span><span class="vf">${iChk} verified</span><span class="idn">${n}</span></div>
-        <h3>${s.title}</h3>
-        <div class="acts">
-          <button class="mini p" data-copy="prompt" data-id="${s.id}">${iCopy}<span>Copy prompt</span></button>
-          <button class="mini" data-copy="code" data-id="${s.id}">${iCopy}<span>Copy code</span></button>
+        <button class="openbtn" data-open="${s.id}"><h3>${s.title}</h3><span class="vtick" title="Verified — this preview is the exact code">${iChk}</span></button>
+        <div class="ctl">
+          <button class="cbtn" data-replay="${s.id}" title="Replay" aria-label="Replay ${s.title}">${iReplay}</button>
+          <button class="cbtn" data-open="${s.id}" title="Open" aria-label="Open ${s.title}">${iExpand}</button>
         </div>
       </div>`;
     grid.appendChild(card);
     const _if=card.querySelector('iframe');_if.addEventListener('load',()=>fitPreview(card.querySelector('.frame')));
-    _if.srcdoc='<style>html,body{overflow:hidden!important}::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}</style>'+s.code;
+    _if.srcdoc=PFX+s.code;
     if(io)io.observe(card);else card.classList.add('in');
   });
   empty.hidden=list.length!==0;
   count.textContent=`[ ${String(list.length).padStart(2,'0')} ] sections · preview = copied code`;
-  grid.querySelectorAll('[data-copy]').forEach(btn=>{btn.addEventListener('click',e=>{e.stopPropagation();const s=S.find(x=>x.id===btn.dataset.id);copyText(btn.dataset.copy==='prompt'?s.prompt:s.code,btn.dataset.copy==='prompt'?'Prompt copied':'Code copied');flash(btn);});});
-  grid.querySelectorAll('.frame[data-open]').forEach(f=>{const open=()=>openSheet(f.dataset.open,f);f.addEventListener('click',open);f.addEventListener('mouseenter',()=>{if(!rm){f.classList.remove('scan-run');void f.offsetWidth;f.classList.add('scan-run');setTimeout(()=>f.classList.remove('scan-run'),1200);}});f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});});
+  const sweep=f=>{if(rm)return;f.classList.remove('scan-run');void f.offsetWidth;f.classList.add('scan-run');setTimeout(()=>f.classList.remove('scan-run'),1200);};
+  grid.querySelectorAll('[data-open]').forEach(b=>{b.addEventListener('click',()=>openSheet(b.dataset.open,b));});
+  grid.querySelectorAll('[data-replay]').forEach(b=>{b.addEventListener('click',()=>{const s=S.find(x=>x.id===b.dataset.replay),f=b.closest('.card').querySelector('.frame');f.querySelector('iframe').srcdoc=PFX+s.code;sweep(f);});});
+  grid.querySelectorAll('.card').forEach(c=>{c.addEventListener('mouseenter',()=>sweep(c.querySelector('.frame')));});
   requestAnimationFrame(fitAll);
 }
 function flash(btn){btn.classList.add('copied');const sp=btn.querySelector('span');const pv=sp?sp.textContent:'';if(sp)sp.textContent='Copied';setTimeout(()=>{btn.classList.remove('copied');if(sp)sp.textContent=pv;},1300);}
@@ -2719,13 +2731,6 @@ themeBtn.addEventListener('click',()=>{document.documentElement.setAttribute('da
 if(window.gsap&&!rm){
   const g=window.gsap;
   g.from('.hero .kick, .hero .display, .hero .lede, .hero .cta',{y:14,opacity:0,duration:.6,ease:'power3.out',stagger:.08});
-  if(matchMedia('(pointer:fine)').matches){
-    const grid=document.getElementById('grid'),tmap=new WeakMap();let curF=null;
-    const tf=f=>{let t=tmap.get(f);if(!t){t={ry:g.quickTo(f,'rotationY',{duration:.45,ease:'power3'}),rx:g.quickTo(f,'rotationX',{duration:.45,ease:'power3'}),sc:g.quickTo(f,'scale',{duration:.45,ease:'power3'})};tmap.set(f,t);}return t;};
-    const rest=f=>{const t=tf(f);t.ry(0);t.rx(0);t.sc(1);};
-    grid.addEventListener('pointermove',e=>{const f=e.target.closest('.frame');if(f!==curF){if(curF)rest(curF);curF=f;}if(!f)return;const r=f.getBoundingClientRect();const px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;const t=tf(f);t.ry(px*12);t.rx(-py*10);t.sc(1.03);});
-    grid.addEventListener('pointerleave',()=>{if(curF)rest(curF);curF=null;});
-  }
 }
 document.getElementById('browseBtn').addEventListener('click',e=>{e.preventDefault();document.getElementById('library').scrollIntoView({behavior:rm?'auto':'smooth',block:'start'});});
 
